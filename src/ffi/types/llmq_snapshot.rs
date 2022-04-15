@@ -1,6 +1,8 @@
 use byte::ctx::{Bytes, Endian};
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_snapshot_skip_mode::LLMQSnapshotSkipMode;
+use dash_spv_primitives::crypto::byte_util::BytesDecodable;
+use dash_spv_primitives::impl_bytes_decodable;
 use crate::ffi::boxer::boxed_vec;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
@@ -34,3 +36,5 @@ impl<'a> TryRead<'a, Endian> for LLMQSnapshot {
         }, *offset))
     }
 }
+
+impl_bytes_decodable!(LLMQSnapshot);
