@@ -15,6 +15,9 @@ pub struct LLMQSnapshot {
     //  Mode of the skip list
     pub skip_list_mode: LLMQSnapshotSkipMode,
 }
+
+impl_bytes_decodable!(LLMQSnapshot);
+
 impl<'a> TryRead<'a, Endian> for LLMQSnapshot {
     fn try_read(bytes: &'a [u8], _endian: Endian) -> byte::Result<(Self, usize)> {
         let offset = &mut 0;
@@ -36,5 +39,3 @@ impl<'a> TryRead<'a, Endian> for LLMQSnapshot {
         }, *offset))
     }
 }
-
-impl_bytes_decodable!(LLMQSnapshot);

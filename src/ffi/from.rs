@@ -3,6 +3,7 @@ use std::slice;
 use dash_spv_models::common::block_data::BlockData;
 use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_models::common::socket_address::SocketAddress;
+use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::masternode::llmq_entry::LLMQ_DEFAULT_VERSION;
 use dash_spv_models::tx::{coinbase_transaction, transaction};
@@ -200,6 +201,98 @@ impl<'a> FromFFI<'a> for types::LLMQEntry {
             verified: self.verified,
             saved: self.saved,
             commitment_hash: if self.commitment_hash.is_null() { None } else { Some(UInt256(*self.commitment_hash)) }
+        }
+    }
+}
+
+impl<'a> FromFFI<'a> for types::MNListDiff {
+    type Item = mn_list_diff::MNListDiff<'a>;
+
+    unsafe fn decode(&self) -> Self::Item {
+        Self::Item {
+            base_block_hash: UInt256(*self.base_block_hash),
+            block_hash: UInt256(*self.block_hash),
+            total_transactions: self.total_transactions,
+            merkle_hashes: slice::from_raw_parts(self.merkle_hashes, self.merkle_hashes_count),
+            merkle_hashes_count: self.merkle_hashes_count,
+            merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count),
+            merkle_flags_count: self.merkle_flags_count,
+            coinbase_transaction: (*self.coinbase_transaction).decode(),
+            deleted_masternode_hashes: (0..self.deleted_masternode_hashes_count)
+                .into_iter()
+                .map(|i| UInt256(*(*self.deleted_masternode_hashes.offset(i as isize))))
+                .collect(),
+            added_or_modified_masternodes: (0..self.added_or_modified_masternodes_count)
+                .into_iter()
+                .fold(BTreeMap::new(),|mut acc, i| {
+                    let value = (*(*(self.added_or_modified_masternodes.offset(i as isize)))).decode();
+                    let key = value.provider_registration_transaction_hash.clone().reversed();
+                    acc.insert(key, value);
+                    acc
+                }),
+            deleted_quorums: (0..self.deleted_quorums_count)
+                .into_iter()
+                .fold(HashMap::new(), |mut acc, i| {
+                    let obj = *(*(self.deleted_quorums.offset(i as isize)));
+                    acc
+                        .entry(LLMQType::from(obj.llmq_type))
+                        .or_insert(Vec::new())
+                        .push(UInt256(*obj.llmq_hash));
+                    acc
+                }),
+            added_quorums: (0..self.added_quorums_count)
+                .into_iter()
+                .fold(HashMap::new(), |mut acc, i| {
+                    let entry = (*(*(self.added_quorums.offset(i as isize)))).decode();
+                    acc
+                        .entry(entry.llmq_type)
+                        .or_insert(HashMap::new())
+                        .insert(entry.llmq_hash, entry);
+                    acc
+                }),
+            length: self.length,
+            block_height: self.block_height
+        }
+    }
+}
+impl<'a> FromFFI<'a> for types::LLMQSnapshot {
+    type Item = snapshot::LLMQSnapshot<'a>;
+
+    unsafe fn decode(&self) -> Self::Item {
+        Self::Item {
+            member_list: slice::from_raw_parts(self.member_list, self.member_list_length),
+            skip_list: (0..self.skip_list_length)
+                .into_iter()
+                .map(|i| *(self.skip_list.offset(i as isize)))
+                .collect(),
+            skip_list_mode: self.skip_list_mode
+        }
+    }
+}
+
+impl<'a> FromFFI<'a> for types::LLMQRotationInfo {
+    type Item = rotation_info::LLMQRotationInfo<'a>;
+
+    unsafe fn decode(&self) -> Self::Item {
+        let extra_share = self.extra_share;
+        let (snapshot_at_h_4c,
+            mn_list_diff_at_h_4c) = if extra_share {
+            (Some((*self.snapshot_at_h_4c).decode()), Some((*self.mn_list_diff_at_h_4c).decode()))
+        } else {
+            (None, None)
+        };
+        Self::Item {
+            snapshot_at_h_c: (*self.snapshot_at_h_c).decode(),
+            snapshot_at_h_2c: (*self.snapshot_at_h_2c).decode(),
+            snapshot_at_h_3c: (*self.snapshot_at_h_3c).decode(),
+            mn_list_diff_tip: (*self.mn_list_diff_tip).decode(),
+            mn_list_diff_at_h: (*self.mn_list_diff_at_h).decode(),
+            mn_list_diff_at_h_c: (*self.mn_list_diff_at_h_c).decode(),
+            mn_list_diff_at_h_2c: (*self.mn_list_diff_at_h_2c).decode(),
+            mn_list_diff_at_h_3c: (*self.mn_list_diff_at_h_3c).decode(),
+            extra_share,
+            snapshot_at_h_4c,
+            mn_list_diff_at_h_4c,
         }
     }
 }
