@@ -3,7 +3,7 @@ use byte::ctx::Endian;
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_primitives::crypto::byte_util::UInt256;
 use crate::ffi::boxer::boxed;
-use crate::ffi::types::transaction::Transaction;
+use crate::types::transaction::Transaction;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct CoinbaseTransaction {

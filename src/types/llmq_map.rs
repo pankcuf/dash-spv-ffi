@@ -1,4 +1,4 @@
-use crate::ffi::types::llmq_entry::LLMQEntry;
+use crate::types::llmq_entry::LLMQEntry;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct LLMQMap {

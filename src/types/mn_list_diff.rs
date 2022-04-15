@@ -4,10 +4,10 @@ use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_primitives::crypto::byte_util::{UInt256, VarBytes};
 use crate::ffi::boxer::{boxed, boxed_vec};
-use crate::ffi::types::coinbase_transaction::CoinbaseTransaction;
-use crate::ffi::types::masternode_entry::MasternodeEntry;
-use crate::ffi::types::llmq_entry::LLMQEntry;
-use crate::ffi::types::LLMQTypedHash;
+use crate::types::coinbase_transaction::CoinbaseTransaction;
+use crate::types::masternode_entry::MasternodeEntry;
+use crate::types::llmq_entry::LLMQEntry;
+use crate::types::LLMQTypedHash;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct MNListDiff {

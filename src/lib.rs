@@ -1,4 +1,5 @@
-mod ffi;
+pub mod ffi;
+pub mod types;
 
 #[cfg(test)]
 mod tests {

@@ -4,8 +4,8 @@ use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::tx::transaction::TX_UNCONFIRMED;
 use dash_spv_models::tx::TransactionType;
 use crate::ffi::boxer::{boxed, boxed_vec};
-use crate::ffi::types::transaction_input::TransactionInput;
-use crate::ffi::types::transaction_output::TransactionOutput;
+use crate::types::transaction_input::TransactionInput;
+use crate::types::transaction_output::TransactionOutput;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct Transaction {

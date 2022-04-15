@@ -1,5 +1,5 @@
 use std::ptr::null_mut;
-use crate::ffi;
+use crate::types;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct MNListDiffResult {
@@ -9,12 +9,12 @@ pub struct MNListDiffResult {
     pub has_valid_mn_list_root: bool, //1 byte
     pub has_valid_llmq_list_root: bool, //1 byte
     pub has_valid_quorums: bool, //1 byte
-    pub masternode_list: *mut ffi::types::MasternodeList,
-    pub added_masternodes: *mut *mut ffi::types::MasternodeEntry,
+    pub masternode_list: *mut types::MasternodeList,
+    pub added_masternodes: *mut *mut types::MasternodeEntry,
     pub added_masternodes_count: usize,
-    pub modified_masternodes: *mut *mut ffi::types::MasternodeEntry,
+    pub modified_masternodes: *mut *mut types::MasternodeEntry,
     pub modified_masternodes_count: usize,
-    pub added_llmq_type_maps: *mut *mut ffi::types::LLMQMap,
+    pub added_llmq_type_maps: *mut *mut types::LLMQMap,
     pub added_llmq_type_maps_count: usize,
     pub needed_masternode_lists:  *mut *mut [u8; 32], // [u8; 32]
     pub needed_masternode_lists_count: usize,

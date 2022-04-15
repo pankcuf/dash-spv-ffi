@@ -1,4 +1,3 @@
-pub mod types;
 pub mod boxer;
 pub mod unboxer;
 pub mod from;

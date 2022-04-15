@@ -2,8 +2,8 @@ use std::ptr::null_mut;
 use byte::ctx::Endian;
 use byte::{BytesExt, LE, TryRead};
 use crate::ffi::boxer::boxed;
-use crate::ffi::types::mn_list_diff::MNListDiff;
-use crate::ffi::types::llmq_snapshot::LLMQSnapshot;
+use crate::types::mn_list_diff::MNListDiff;
+use crate::types::llmq_snapshot::LLMQSnapshot;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct LLMQRotationInfo {

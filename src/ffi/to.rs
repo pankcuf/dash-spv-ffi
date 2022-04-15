@@ -5,16 +5,16 @@ use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::tx::{coinbase_transaction, transaction};
 use dash_spv_primitives::crypto::byte_util::UInt256;
-use crate::ffi;
 use crate::ffi::boxer::{boxed, boxed_vec};
 use crate::ffi::from::FromFFI;
+use crate::types;
 
 pub trait ToFFI<'a> {
     type Item: FromFFI<'a>;
     fn encode(&self) -> Self::Item;
 }
 impl<'a> ToFFI<'a> for transaction::TransactionInput<'a> {
-    type Item = ffi::types::TransactionInput;
+    type Item = types::TransactionInput;
 
     fn encode(&self) -> Self::Item {
         let (script, script_length) = if self.script.is_none() {
@@ -42,7 +42,7 @@ impl<'a> ToFFI<'a> for transaction::TransactionInput<'a> {
 }
 
 impl<'a> ToFFI<'a> for transaction::TransactionOutput<'a> {
-    type Item = ffi::types::TransactionOutput;
+    type Item = types::TransactionOutput;
 
     fn encode(&self) -> Self::Item {
         let (script, script_length) = if self.script.is_none() {
@@ -68,7 +68,7 @@ impl<'a> ToFFI<'a> for transaction::TransactionOutput<'a> {
 }
 
 impl<'a> ToFFI<'a> for transaction::Transaction<'a> {
-    type Item = ffi::types::Transaction;
+    type Item = types::Transaction;
 
     fn encode(&self) -> Self::Item {
         Self::Item {
@@ -96,7 +96,7 @@ impl<'a> ToFFI<'a> for transaction::Transaction<'a> {
     }
 }
 impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction<'a> {
-    type Item = ffi::types::CoinbaseTransaction;
+    type Item = types::CoinbaseTransaction;
 
     fn encode(&self) -> Self::Item {
         Self::Item {
@@ -114,7 +114,7 @@ impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction<'a> {
 }
 
 impl<'a> ToFFI<'a> for masternode_list::MasternodeList<'a> {
-    type Item = ffi::types::MasternodeList;
+    type Item = types::MasternodeList;
 
     fn encode(&self) -> Self::Item {
         Self::Item {
@@ -139,7 +139,7 @@ impl<'a> ToFFI<'a> for masternode_list::MasternodeList<'a> {
 }
 
 impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
-    type Item = ffi::types::MasternodeEntry;
+    type Item = types::MasternodeEntry;
 
     fn encode(&self) -> Self::Item {
         let previous_operator_public_keys_count = self.previous_operator_public_keys.len();
@@ -160,19 +160,19 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
             previous_operator_public_keys: boxed_vec(self.previous_operator_public_keys
                 .iter()
                 .map(|(&BlockData {hash, height: block_height}, &key)|
-                    ffi::types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
+                    types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
                 .collect()),
             previous_operator_public_keys_count,
             previous_entry_hashes: boxed_vec(self.previous_entry_hashes
                 .iter()
                 .map(|(&BlockData { hash: block_hash, height: block_height}, &hash)|
-                    ffi::types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
+                    types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
                 .collect()),
             previous_entry_hashes_count,
             previous_validity: boxed_vec(self.previous_validity
                 .iter()
                 .map(|(&BlockData { hash, height: block_height}, &is_valid)|
-                    ffi::types::Validity { block_hash: hash.0, block_height, is_valid })
+                    types::Validity { block_hash: hash.0, block_height, is_valid })
                 .collect()),
             previous_validity_count,
             provider_registration_transaction_hash: boxed(self.provider_registration_transaction_hash.0),
@@ -184,7 +184,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
 }
 
 impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry<'a> {
-    type Item = ffi::types::LLMQEntry;
+    type Item = types::LLMQEntry;
 
     fn encode(&self) -> Self::Item {
         //println!("LLMQEntry.to: {:?} {} {}", self.entry_hash, self.signers_bitset.to_hex(), self.signers_bitset.len());
@@ -216,11 +216,11 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry<'a> {
     }
 }
 
-pub fn encode_quorums_map(quorums: &HashMap<LLMQType, HashMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut ffi::types::LLMQMap {
+pub fn encode_quorums_map(quorums: &HashMap<LLMQType, HashMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut types::LLMQMap {
     boxed_vec(quorums
         .iter()
         .map(|(&llmq_type, map)|
-            boxed(ffi::types::LLMQMap {
+            boxed(types::LLMQMap {
                 llmq_type: llmq_type.into(),
                 values: boxed_vec((*map)
                     .iter()
@@ -231,7 +231,7 @@ pub fn encode_quorums_map(quorums: &HashMap<LLMQType, HashMap<UInt256, llmq_entr
         .collect())
 }
 
-pub fn encode_masternodes_map(masternodes: &BTreeMap<UInt256, masternode_entry::MasternodeEntry>) -> *mut *mut ffi::types::MasternodeEntry {
+pub fn encode_masternodes_map(masternodes: &BTreeMap<UInt256, masternode_entry::MasternodeEntry>) -> *mut *mut types::MasternodeEntry {
     boxed_vec(masternodes
         .iter()
         .map(|(_, entry)| boxed((*entry).encode()))

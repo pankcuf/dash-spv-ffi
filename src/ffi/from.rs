@@ -8,14 +8,14 @@ use dash_spv_models::masternode::llmq_entry::LLMQ_DEFAULT_VERSION;
 use dash_spv_models::tx::{coinbase_transaction, transaction};
 use dash_spv_primitives::consensus::encode;
 use dash_spv_primitives::crypto::byte_util::{Reversable, UInt128, UInt160, UInt256, UInt384, UInt768};
-use crate::ffi;
 use crate::ffi::to::ToFFI;
+use crate::types;
 
 pub trait FromFFI<'a> {
     type Item: ToFFI<'a>;
     unsafe fn decode(&self) -> Self::Item;
 }
-impl<'a> FromFFI<'a> for ffi::types::TransactionInput {
+impl<'a> FromFFI<'a> for types::TransactionInput {
     type Item = transaction::TransactionInput<'a>;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -37,7 +37,7 @@ impl<'a> FromFFI<'a> for ffi::types::TransactionInput {
     }
 }
 
-impl<'a> FromFFI<'a> for ffi::types::TransactionOutput {
+impl<'a> FromFFI<'a> for types::TransactionOutput {
     type Item = transaction::TransactionOutput<'a>;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -56,7 +56,7 @@ impl<'a> FromFFI<'a> for ffi::types::TransactionOutput {
         }
     }
 }
-impl<'a> FromFFI<'a> for ffi::types::Transaction {
+impl<'a> FromFFI<'a> for types::Transaction {
     type Item = transaction::Transaction<'a>;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -78,7 +78,7 @@ impl<'a> FromFFI<'a> for ffi::types::Transaction {
         }
     }
 }
-impl<'a> FromFFI<'a> for ffi::types::CoinbaseTransaction {
+impl<'a> FromFFI<'a> for types::CoinbaseTransaction {
     type Item = coinbase_transaction::CoinbaseTransaction<'a>;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -92,7 +92,7 @@ impl<'a> FromFFI<'a> for ffi::types::CoinbaseTransaction {
     }
 }
 
-impl<'a> FromFFI<'a> for ffi::types::MasternodeList {
+impl<'a> FromFFI<'a> for types::MasternodeList {
     type Item = masternode_list::MasternodeList<'a>;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -131,7 +131,7 @@ impl<'a> FromFFI<'a> for ffi::types::MasternodeList {
     }
 }
 
-impl<'a> FromFFI<'a> for ffi::types::MasternodeEntry {
+impl<'a> FromFFI<'a> for types::MasternodeEntry {
     type Item = masternode_entry::MasternodeEntry;
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -176,7 +176,7 @@ impl<'a> FromFFI<'a> for ffi::types::MasternodeEntry {
     }
 }
 
-impl<'a> FromFFI<'a> for ffi::types::LLMQEntry {
+impl<'a> FromFFI<'a> for types::LLMQEntry {
     type Item = llmq_entry::LLMQEntry<'a>;
 
     unsafe fn decode(&self) -> Self::Item {

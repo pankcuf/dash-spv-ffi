@@ -3,9 +3,9 @@ use byte::ctx::Endian;
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_primitives::crypto::byte_util::{UInt128, UInt160, UInt256, UInt384};
 use crate::ffi::boxer::boxed;
-use crate::ffi::types::masternode_entry_hash::MasternodeEntryHash;
-use crate::ffi::types::operator_public_key::OperatorPublicKey;
-use crate::ffi::types::validity::Validity;
+use crate::types::masternode_entry_hash::MasternodeEntryHash;
+use crate::types::operator_public_key::OperatorPublicKey;
+use crate::types::validity::Validity;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct MasternodeEntry {
