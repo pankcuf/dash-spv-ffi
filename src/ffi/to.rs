@@ -303,24 +303,24 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
         } else {
             (null_mut(), null_mut())
         };
-        /*let block_hash_list_num = self.block_hash_list.len();
-        let block_hash_list = boxed_vec(
-            (0..block_hash_list_num)
+        let last_quorum_hash_per_index_count = self.last_quorum_hash_per_index.len();
+        let last_quorum_hash_per_index = boxed_vec(
+            (0..last_quorum_hash_per_index_count)
                 .into_iter()
-                .map(|i| boxed(self.block_hash_list[i].0))
+                .map(|i| boxed(self.last_quorum_hash_per_index[i].0))
                 .collect());
-        let snapshot_list_num = self.snapshot_list.len();
-        let snapshot_list = boxed_vec(
-            (0..snapshot_list_num)
+        let quorum_snapshot_list_count = self.quorum_snapshot_list.len();
+        let quorum_snapshot_list = boxed_vec(
+            (0..quorum_snapshot_list_count)
                 .into_iter()
-                .map(|i| boxed(self.snapshot_list[i].encode()))
+                .map(|i| boxed(self.quorum_snapshot_list[i].encode()))
                 .collect());
-        let mn_list_diff_list_num = self.mn_list_diff_list.len();
+        let mn_list_diff_list_count = self.mn_list_diff_list.len();
         let mn_list_diff_list = boxed_vec(
-            (0..mn_list_diff_list_num)
+            (0..mn_list_diff_list_count)
                 .into_iter()
                 .map(|i| boxed(self.mn_list_diff_list[i].encode()))
-                .collect());*/
+                .collect());
         Self::Item {
             snapshot_at_h_c,
             snapshot_at_h_2c,
@@ -333,12 +333,12 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
             extra_share,
             snapshot_at_h_4c,
             mn_list_diff_at_h_4c,
-            /*block_hash_list_num: block_hash_list_num as u32,
-            block_hash_list,
-            snapshot_list_num: snapshot_list_num as u32,
-            snapshot_list,
-            mn_list_diff_list_num: mn_list_diff_list_num as u32,
-            mn_list_diff_list*/
+            last_quorum_hash_per_index_count,
+            last_quorum_hash_per_index,
+            quorum_snapshot_list_count,
+            quorum_snapshot_list,
+            mn_list_diff_list_count,
+            mn_list_diff_list
         }
     }
 }

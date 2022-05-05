@@ -117,6 +117,12 @@ pub unsafe fn unbox_mn_list_diff_vec(vec: Vec<*mut types::MNListDiff>) {
     }
 }
 
+pub unsafe fn unbox_mn_list_diff_result_vec(vec: Vec<*mut types::MNListDiffResult>) {
+    for &x in vec.iter() {
+        unbox_result(x);
+    }
+}
+
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     let result = unbox_any(quorum_snapshot);
     unbox_vec_ptr(result.member_list, result.member_list_length);
@@ -204,9 +210,9 @@ pub unsafe fn unbox_llmq_rotation_info(result: *mut types::LLMQRotationInfo) {
         unbox_llmq_snapshot(res.snapshot_at_h_4c);
         unbox_mn_list_diff(res.mn_list_diff_at_h_4c);
     }
-    //unbox_vec(unbox_vec_ptr(res.block_hash_list, res.block_hash_list_num as usize));
-    //unbox_snapshot_vec(unbox_vec_ptr(res.snapshot_list, res.snapshot_list_num as usize));
-    //unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_num as usize));
+    unbox_vec(unbox_vec_ptr(res.last_quorum_hash_per_index, res.last_quorum_hash_per_index_count));
+    unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
+    unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }
 pub unsafe fn unbox_llmq_rotation_info_result(result: *mut types::LLMQRotationInfoResult) {
     let res = unbox_any(result);
@@ -220,4 +226,8 @@ pub unsafe fn unbox_llmq_rotation_info_result(result: *mut types::LLMQRotationIn
     unbox_llmq_snapshot(res.snapshot_at_h_2c);
     unbox_llmq_snapshot(res.snapshot_at_h_3c);
     unbox_llmq_snapshot(res.snapshot_at_h_4c);
+    unbox_vec(unbox_vec_ptr(res.last_quorum_hash_per_index, res.last_quorum_hash_per_index_count));
+    unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
+    unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
+    // unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }

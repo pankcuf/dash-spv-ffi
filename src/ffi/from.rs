@@ -293,6 +293,18 @@ impl<'a> FromFFI<'a> for types::LLMQRotationInfo {
             extra_share,
             snapshot_at_h_4c,
             mn_list_diff_at_h_4c,
+            last_quorum_hash_per_index: (0..self.last_quorum_hash_per_index_count)
+                .into_iter()
+                .map(|i| UInt256(*(*self.last_quorum_hash_per_index.offset(i as isize))))
+                .collect(),
+            quorum_snapshot_list: (0..self.quorum_snapshot_list_count)
+                .into_iter()
+                .map(|i| (*(*self.quorum_snapshot_list.offset(i as isize))).decode())
+                .collect(),
+            mn_list_diff_list: (0..self.mn_list_diff_list_count)
+                .into_iter()
+                .map(|i| (*(*self.mn_list_diff_list.offset(i as isize))).decode())
+                .collect(),
         }
     }
 }
