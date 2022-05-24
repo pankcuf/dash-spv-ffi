@@ -221,11 +221,13 @@ pub unsafe fn unbox_llmq_rotation_info_result(result: *mut types::LLMQRotationIn
     unbox_result(res.result_at_h_c);
     unbox_result(res.result_at_h_2c);
     unbox_result(res.result_at_h_3c);
-    unbox_result(res.result_at_h_4c);
     unbox_llmq_snapshot(res.snapshot_at_h_c);
     unbox_llmq_snapshot(res.snapshot_at_h_2c);
     unbox_llmq_snapshot(res.snapshot_at_h_3c);
-    unbox_llmq_snapshot(res.snapshot_at_h_4c);
+    if res.extra_share {
+        unbox_result(res.result_at_h_4c);
+        unbox_llmq_snapshot(res.snapshot_at_h_4c);
+    }
     unbox_vec(unbox_vec_ptr(res.last_quorum_hash_per_index, res.last_quorum_hash_per_index_count));
     unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
     unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
