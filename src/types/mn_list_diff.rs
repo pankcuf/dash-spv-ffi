@@ -2,7 +2,7 @@ use std::ptr::null_mut;
 use byte::ctx::{Bytes, Endian};
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_type::LLMQType;
-use dash_spv_primitives::crypto::byte_util::{UInt256, VarBytes};
+use dash_spv_primitives::crypto::{UInt256, VarBytes};
 use crate::ffi::boxer::{boxed, boxed_vec};
 use crate::types::coinbase_transaction::CoinbaseTransaction;
 use crate::types::masternode_entry::MasternodeEntry;

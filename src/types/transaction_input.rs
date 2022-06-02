@@ -1,7 +1,7 @@
 use std::ptr::null_mut;
 use byte::ctx::Endian;
 use byte::{BytesExt, LE, TryRead};
-use dash_spv_primitives::crypto::byte_util::{UInt256, VarBytes};
+use dash_spv_primitives::crypto::{UInt256, VarBytes};
 use crate::ffi::boxer::{boxed, boxed_vec};
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
