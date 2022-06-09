@@ -1,15 +1,17 @@
 [package]
 name = "dash-spv-ffi"
-version = "0.1.8"
+version = "0.1.9"
 edition = "2018"
 
 [dependencies]
 byte = "0.2"
 [dependencies.dash-spv-primitives]
+#path = "../dash-spv-primitives"
 git = "https://github.com/pankcuf/dash-spv-primitives"
 branch = "master"
-version = "^0.1"
+version = "0.1.12"
 [dependencies.dash-spv-models]
+#path = "../dash-spv-models"
 git = "https://github.com/pankcuf/dash-spv-models"
 branch = "master"
 version = "^0.1"

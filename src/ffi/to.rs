@@ -114,7 +114,7 @@ impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction<'a> {
     }
 }
 
-impl<'a> ToFFI<'a> for masternode_list::MasternodeList<'a> {
+impl<'a> ToFFI<'a> for masternode_list::MasternodeList {
     type Item = types::MasternodeList;
 
     fn encode(&self) -> Self::Item {
@@ -184,7 +184,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
     }
 }
 
-impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry<'a> {
+impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
     type Item = types::LLMQEntry;
 
     fn encode(&self) -> Self::Item {
@@ -205,10 +205,10 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry<'a> {
             threshold_signature: boxed(self.threshold_signature.0),
             verification_vector_hash: boxed(self.verification_vector_hash.0),
             saved: self.saved,
-            signers_bitset: boxed_vec(self.signers_bitset.to_vec()),
+            signers_bitset: boxed_vec(self.signers_bitset.clone()),
             signers_bitset_length: self.signers_bitset.len(),
             signers_count: self.signers_count.0,
-            valid_members_bitset: boxed_vec(self.valid_members_bitset.to_vec()),
+            valid_members_bitset: boxed_vec(self.valid_members_bitset.clone()),
             valid_members_bitset_length: self.valid_members_bitset.len(),
             valid_members_count: self.valid_members_count.0,
             verified: self.verified,
@@ -237,7 +237,7 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
             .fold(Vec::new(), |mut acc, (_, map)| {
                 map
                     .iter()
-                    .for_each(|(_, &entry)| acc.push(boxed(entry.encode())));
+                    .for_each(|(_, entry)| acc.push(boxed(entry.encode())));
                 acc
             });
         Self::Item {
@@ -352,7 +352,7 @@ pub fn encode_quorums_map(quorums: &HashMap<LLMQType, HashMap<UInt256, llmq_entr
                 llmq_type: llmq_type.into(),
                 values: boxed_vec((*map)
                     .iter()
-                    .map(|(_, &entry)| boxed(entry.encode()))
+                    .map(|(_, entry)| boxed(entry.encode()))
                     .collect()),
                 count: (*map).len()
             }))

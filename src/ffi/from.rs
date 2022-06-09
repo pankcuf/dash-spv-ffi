@@ -94,7 +94,7 @@ impl<'a> FromFFI<'a> for types::CoinbaseTransaction {
 }
 
 impl<'a> FromFFI<'a> for types::MasternodeList {
-    type Item = masternode_list::MasternodeList<'a>;
+    type Item = masternode_list::MasternodeList;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -178,11 +178,11 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
 }
 
 impl<'a> FromFFI<'a> for types::LLMQEntry {
-    type Item = llmq_entry::LLMQEntry<'a>;
+    type Item = llmq_entry::LLMQEntry;
 
     unsafe fn decode(&self) -> Self::Item {
-        let signers_bitset = slice::from_raw_parts(self.signers_bitset as *const u8, self.signers_bitset_length);
-        let valid_members_bitset = slice::from_raw_parts(self.valid_members_bitset as *const u8, self.valid_members_bitset_length);
+        let signers_bitset = slice::from_raw_parts(self.signers_bitset as *const u8, self.signers_bitset_length).to_vec();
+        let valid_members_bitset = slice::from_raw_parts(self.valid_members_bitset as *const u8, self.valid_members_bitset_length).to_vec();
         Self::Item {
             version: self.version,
             llmq_hash: UInt256(*self.llmq_hash),
