@@ -14,21 +14,17 @@ pub trait ToFFI<'a> {
     type Item: FromFFI<'a>;
     fn encode(&self) -> Self::Item;
 }
-impl<'a> ToFFI<'a> for transaction::TransactionInput<'a> {
+impl<'a> ToFFI<'a> for transaction::TransactionInput {
     type Item = types::TransactionInput;
 
     fn encode(&self) -> Self::Item {
-        let (script, script_length) = if self.script.is_none() {
-            (null_mut(), 0)
-        } else {
-            let s = self.script.unwrap();
-            (boxed_vec(s.to_vec()), s.len())
+        let (script, script_length) = match &self.script {
+            Some(data) => (boxed_vec(data.clone()), data.len()),
+            None => (null_mut(), 0)
         };
-        let (signature, signature_length) = if self.signature.is_none() {
-            (null_mut(), 0)
-        } else {
-            let s = self.signature.unwrap();
-            (boxed_vec(s.to_vec()), s.len())
+        let (signature, signature_length) = match &self.signature {
+            Some(data) => (boxed_vec(data.clone()), data.len()),
+            None => (null_mut(), 0)
         };
         Self::Item {
             input_hash: boxed(self.input_hash.0),
@@ -42,21 +38,17 @@ impl<'a> ToFFI<'a> for transaction::TransactionInput<'a> {
     }
 }
 
-impl<'a> ToFFI<'a> for transaction::TransactionOutput<'a> {
+impl<'a> ToFFI<'a> for transaction::TransactionOutput {
     type Item = types::TransactionOutput;
 
     fn encode(&self) -> Self::Item {
-        let (script, script_length) = if self.script.is_none() {
-            (null_mut(), 0)
-        } else {
-            let s = self.script.unwrap();
-            (boxed_vec(s.to_vec()), s.len())
+        let (script, script_length) = match &self.script {
+            Some(data) => (boxed_vec(data.clone()), data.len()),
+            None => (null_mut(), 0)
         };
-        let (address, address_length) = if self.address.is_none() {
-            (null_mut(), 0)
-        } else {
-            let s = self.address.unwrap();
-            (boxed_vec(s.to_vec()), s.len())
+        let (address, address_length) = match &self.address {
+            Some(data) => (boxed_vec(data.clone()), data.len()),
+            None => (null_mut(), 0)
         };
         Self::Item {
             amount: self.amount,
@@ -68,19 +60,19 @@ impl<'a> ToFFI<'a> for transaction::TransactionOutput<'a> {
     }
 }
 
-impl<'a> ToFFI<'a> for transaction::Transaction<'a> {
+impl<'a> ToFFI<'a> for transaction::Transaction {
     type Item = types::Transaction;
 
     fn encode(&self) -> Self::Item {
         Self::Item {
             inputs: boxed_vec(self.inputs
                 .iter()
-                .map(|&input| boxed(input.encode()))
+                .map(|input| boxed(input.encode()))
                 .collect()),
             inputs_count: self.inputs.len(),
             outputs: boxed_vec(self.outputs
                 .iter()
-                .map(|&output| boxed(output.encode()))
+                .map(|output| boxed(output.encode()))
                 .collect()),
             outputs_count: self.outputs.len(),
             lock_time: self.lock_time,
@@ -96,7 +88,7 @@ impl<'a> ToFFI<'a> for transaction::Transaction<'a> {
         }
     }
 }
-impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction<'a> {
+impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction {
     type Item = types::CoinbaseTransaction;
 
     fn encode(&self) -> Self::Item {

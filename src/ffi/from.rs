@@ -17,7 +17,7 @@ pub trait FromFFI<'a> {
     unsafe fn decode(&self) -> Self::Item;
 }
 impl<'a> FromFFI<'a> for types::TransactionInput {
-    type Item = transaction::TransactionInput<'a>;
+    type Item = transaction::TransactionInput;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -26,12 +26,14 @@ impl<'a> FromFFI<'a> for types::TransactionInput {
             script: if self.script.is_null() || self.script_length == 0 {
                 None
             } else {
-                Some(slice::from_raw_parts(self.script, self.script_length))
+                Some(Vec::from_raw_parts(self.script, self.script_length, self.script_length))
+                //Some(slice::from_raw_parts(self.script, self.script_length))
             },
             signature: if self.signature.is_null() || self.signature_length == 0 {
                 None
             } else {
-                Some(slice::from_raw_parts(self.signature, self.signature_length))
+                Some(Vec::from_raw_parts(self.signature, self.signature_length, self.signature_length))
+                // Some(slice::from_raw_parts(self.signature, self.signature_length))
             },
             sequence: self.sequence
         }
@@ -39,7 +41,7 @@ impl<'a> FromFFI<'a> for types::TransactionInput {
 }
 
 impl<'a> FromFFI<'a> for types::TransactionOutput {
-    type Item = transaction::TransactionOutput<'a>;
+    type Item = transaction::TransactionOutput;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -47,18 +49,20 @@ impl<'a> FromFFI<'a> for types::TransactionOutput {
             script: if self.script.is_null() || self.script_length == 0 {
                 None
             } else {
-                Some(slice::from_raw_parts(self.script, self.script_length))
+                Some(Vec::from_raw_parts(self.script, self.script_length, self.script_length))
+                //Some(slice::from_raw_parts(self.script, self.script_length))
             },
             address: if self.address.is_null() || self.address_length == 0 {
                 None
             } else {
-                Some(slice::from_raw_parts(self.address, self.address_length))
+                Some(Vec::from_raw_parts(self.address, self.address_length, self.address_length))
+                //Some(slice::from_raw_parts(self.address, self.address_length))
             }
         }
     }
 }
 impl<'a> FromFFI<'a> for types::Transaction {
-    type Item = transaction::Transaction<'a>;
+    type Item = transaction::Transaction;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -80,7 +84,7 @@ impl<'a> FromFFI<'a> for types::Transaction {
     }
 }
 impl<'a> FromFFI<'a> for types::CoinbaseTransaction {
-    type Item = coinbase_transaction::CoinbaseTransaction<'a>;
+    type Item = coinbase_transaction::CoinbaseTransaction;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
