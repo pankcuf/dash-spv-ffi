@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::ptr::null_mut;
 use dash_spv_models::common::block_data::BlockData;
 use dash_spv_models::common::llmq_type::LLMQType;
@@ -336,7 +336,7 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
 }
 
 
-pub fn encode_quorums_map(quorums: &HashMap<LLMQType, HashMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut types::LLMQMap {
+pub fn encode_quorums_map(quorums: &BTreeMap<LLMQType, BTreeMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut types::LLMQMap {
     boxed_vec(quorums
         .iter()
         .map(|(&llmq_type, map)|

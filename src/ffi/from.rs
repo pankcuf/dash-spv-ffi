@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use std::slice;
 use dash_spv_models::common::block_data::BlockData;
 use dash_spv_models::common::llmq_type::LLMQType;
@@ -116,13 +116,13 @@ impl<'a> FromFFI<'a> for types::MasternodeList {
                 }),
             quorums: (0..self.llmq_type_maps_count)
                 .into_iter()
-                .fold(HashMap::new(), |mut acc, i| {
+                .fold(BTreeMap::new(), |mut acc, i| {
                     let llmq_map = *(*(self.llmq_type_maps.offset(i as isize)));
                     let key = LLMQType::from(llmq_map.llmq_type);
-                    let value: HashMap<UInt256, llmq_entry::LLMQEntry> =
+                    let value: BTreeMap<UInt256, llmq_entry::LLMQEntry> =
                         (0..llmq_map.count)
                             .into_iter()
-                            .fold(HashMap::new(), |mut acc, j| {
+                            .fold(BTreeMap::new(), |mut acc, j| {
                                 let raw_value = *(*(llmq_map.values.offset(j as isize)));
                                 let value = raw_value.decode();
                                 let key = value.llmq_hash.clone();
@@ -236,7 +236,7 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
                 }),
             deleted_quorums: (0..self.deleted_quorums_count)
                 .into_iter()
-                .fold(HashMap::new(), |mut acc, i| {
+                .fold(BTreeMap::new(), |mut acc, i| {
                     let obj = *(*(self.deleted_quorums.offset(i as isize)));
                     acc
                         .entry(LLMQType::from(obj.llmq_type))
@@ -246,11 +246,11 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
                 }),
             added_quorums: (0..self.added_quorums_count)
                 .into_iter()
-                .fold(HashMap::new(), |mut acc, i| {
+                .fold(BTreeMap::new(), |mut acc, i| {
                     let entry = (*(*(self.added_quorums.offset(i as isize)))).decode();
                     acc
                         .entry(entry.llmq_type)
-                        .or_insert(HashMap::new())
+                        .or_insert(BTreeMap::new())
                         .insert(entry.llmq_hash, entry);
                     acc
                 }),
