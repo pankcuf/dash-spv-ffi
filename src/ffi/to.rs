@@ -295,11 +295,11 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
         } else {
             (null_mut(), null_mut())
         };
-        let last_quorum_hash_per_index_count = self.last_quorum_hash_per_index.len();
-        let last_quorum_hash_per_index = boxed_vec(
-            (0..last_quorum_hash_per_index_count)
+        let last_quorum_per_index_count = self.last_quorum_per_index.len();
+        let last_quorum_per_index = boxed_vec(
+            (0..last_quorum_per_index_count)
                 .into_iter()
-                .map(|i| boxed(self.last_quorum_hash_per_index[i].0))
+                .map(|i| boxed(self.last_quorum_per_index[i].encode()))
                 .collect());
         let quorum_snapshot_list_count = self.quorum_snapshot_list.len();
         let quorum_snapshot_list = boxed_vec(
@@ -325,8 +325,8 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
             extra_share,
             snapshot_at_h_4c,
             mn_list_diff_at_h_4c,
-            last_quorum_hash_per_index_count,
-            last_quorum_hash_per_index,
+            last_quorum_per_index_count,
+            last_quorum_per_index,
             quorum_snapshot_list_count,
             quorum_snapshot_list,
             mn_list_diff_list_count,
