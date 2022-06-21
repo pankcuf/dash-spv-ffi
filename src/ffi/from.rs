@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::slice;
-use dash_spv_models::common::block_data::BlockData;
+use dash_spv_models::common;
+use dash_spv_models::common::block::Block;
 use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_models::common::socket_address::SocketAddress;
 use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
@@ -149,7 +150,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
                     let obj = *self.previous_operator_public_keys.offset(i as isize);
-                    let key = BlockData { height: obj.block_height, hash: UInt256(obj.block_hash) };
+                    let key = Block { height: obj.block_height, hash: UInt256(obj.block_hash) };
                     let value = UInt384(obj.key);
                     acc.insert(key, value);
                     acc
@@ -158,7 +159,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
                     let obj = *self.previous_entry_hashes.offset(i as isize);
-                    let key = BlockData { height: obj.block_height, hash: UInt256(obj.block_hash) };
+                    let key = Block { height: obj.block_height, hash: UInt256(obj.block_hash) };
                     let value = UInt256(obj.hash);
                     acc.insert(key, value);
                     acc
@@ -167,7 +168,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
                     let obj = *self.previous_validity.offset(i as isize);
-                    let key = BlockData { height: obj.block_height, hash: UInt256(obj.block_hash) };
+                    let key = Block { height: obj.block_height, hash: UInt256(obj.block_hash) };
                     let value = obj.is_valid;
                     acc.insert(key, value);
                     acc
@@ -309,6 +310,17 @@ impl<'a> FromFFI<'a> for types::LLMQRotationInfo {
                 .into_iter()
                 .map(|i| (*(*self.mn_list_diff_list.offset(i as isize))).decode())
                 .collect(),
+        }
+    }
+}
+
+impl<'a> FromFFI<'a> for types::Block {
+    type Item = common::Block;
+
+    unsafe fn decode(&self) -> Self::Item {
+        Self::Item {
+            height: self.height,
+            hash: UInt256(*self.hash),
         }
     }
 }

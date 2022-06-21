@@ -122,6 +122,15 @@ pub unsafe fn unbox_mn_list_diff_result_vec(vec: Vec<*mut types::MNListDiffResul
         unbox_result(x);
     }
 }
+pub unsafe fn unbox_block(block: *mut types::Block) {
+    let result = unbox_any(block);
+    unbox_any(result.hash);
+}
+
+pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash) {
+    let result = unbox_any(indexed_hash);
+    unbox_any(result.hash);
+}
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     let result = unbox_any(quorum_snapshot);

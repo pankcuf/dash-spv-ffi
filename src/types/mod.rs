@@ -19,6 +19,8 @@ pub mod llmq_validation_data;
 pub mod llmq_rotation_info_result;
 pub mod llmq_map;
 pub mod llmq_typed_hash;
+pub mod block;
+pub mod llmq_indexed_hash;
 
 pub use self::masternode_entry::MasternodeEntry;
 pub use self::masternode_entry_hash::MasternodeEntryHash;
@@ -39,3 +41,5 @@ pub use self::llmq_snapshot::LLMQSnapshot;
 pub use self::llmq_rotation_info_result::LLMQRotationInfoResult;
 pub use self::llmq_map::LLMQMap;
 pub use self::llmq_typed_hash::LLMQTypedHash;
+pub use self::llmq_indexed_hash::LLMQIndexedHash;
+pub use self::block::Block;

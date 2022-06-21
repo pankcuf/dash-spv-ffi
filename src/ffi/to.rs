@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::ptr::null_mut;
-use dash_spv_models::common::block_data::BlockData;
-use dash_spv_models::common::llmq_type::LLMQType;
+use dash_spv_models::common;
+use dash_spv_models::common::{Block, LLMQType};
 use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::tx::{coinbase_transaction, transaction};
@@ -152,19 +152,19 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
             operator_public_key: boxed(self.operator_public_key.0),
             previous_operator_public_keys: boxed_vec(self.previous_operator_public_keys
                 .iter()
-                .map(|(&BlockData {hash, height: block_height}, &key)|
+                .map(|(&Block {hash, height: block_height}, &key)|
                     types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
                 .collect()),
             previous_operator_public_keys_count,
             previous_entry_hashes: boxed_vec(self.previous_entry_hashes
                 .iter()
-                .map(|(&BlockData { hash: block_hash, height: block_height}, &hash)|
+                .map(|(&Block { hash: block_hash, height: block_height}, &hash)|
                     types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
                 .collect()),
             previous_entry_hashes_count,
             previous_validity: boxed_vec(self.previous_validity
                 .iter()
-                .map(|(&BlockData { hash, height: block_height}, &is_valid)|
+                .map(|(&Block { hash, height: block_height}, &is_valid)|
                     types::Validity { block_hash: hash.0, block_height, is_valid })
                 .collect()),
             previous_validity_count,
@@ -335,6 +335,16 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
     }
 }
 
+impl<'a> ToFFI<'a> for common::Block {
+    type Item = types::Block;
+
+    fn encode(&self) -> Self::Item {
+        Self::Item {
+            height: self.height,
+            hash: boxed(self.hash.0),
+        }
+    }
+}
 
 pub fn encode_quorums_map(quorums: &BTreeMap<LLMQType, BTreeMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut types::LLMQMap {
     boxed_vec(quorums
