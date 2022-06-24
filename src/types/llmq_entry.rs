@@ -2,6 +2,7 @@ use std::ptr::null_mut;
 use byte::ctx::{Bytes, Endian};
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_type::LLMQType;
+use dash_spv_models::masternode::llmq_entry::LLMQ_INDEXED_VERSION;
 use dash_spv_primitives::crypto::byte_util::{UInt256, UInt384, UInt768};
 use crate::ffi::boxer::{boxed, boxed_vec};
 
@@ -9,7 +10,6 @@ use crate::ffi::boxer::{boxed, boxed_vec};
 pub struct LLMQEntry {
     pub all_commitment_aggregated_signature: *mut [u8; 96],
     pub commitment_hash: *mut [u8; 32], // nullable
-    pub length: usize,
     pub llmq_type: LLMQType,
     pub entry_hash: *mut [u8; 32],
     pub llmq_hash: *mut [u8; 32],
@@ -35,7 +35,7 @@ impl<'a> TryRead<'a, Endian> for LLMQEntry {
         let llmq_type = bytes.read_with::<u8>(offset, LE)?;
         let llmq_hash = boxed(bytes.read_with::<UInt256>(offset, LE)?.0);
         let index = match version {
-            2 => bytes.read_with::<u32>(offset, LE)?,
+            LLMQ_INDEXED_VERSION => bytes.read_with::<u32>(offset, LE)?,
             _ => 0,
         };
         let signers_count = bytes.read_with::<dash_spv_primitives::consensus::encode::VarInt>(offset, LE)?;
@@ -59,7 +59,6 @@ impl<'a> TryRead<'a, Endian> for LLMQEntry {
         Ok((Self {
             all_commitment_aggregated_signature,
             commitment_hash: null_mut(),
-            length: *offset,
             llmq_type,
             entry_hash: null_mut(),
             llmq_hash,

@@ -188,7 +188,6 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
             } else {
                 boxed(self.commitment_hash.unwrap().0)
             },
-            length: self.length,
             llmq_type: self.llmq_type,
             entry_hash: boxed(self.entry_hash.0),
             llmq_hash: boxed(self.llmq_hash.0),

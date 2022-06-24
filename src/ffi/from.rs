@@ -201,7 +201,6 @@ impl<'a> FromFFI<'a> for types::LLMQEntry {
             valid_members_count: encode::VarInt(self.valid_members_count),
             signers_bitset,
             valid_members_bitset,
-            length: self.length,
             entry_hash: UInt256(*self.entry_hash),
             verified: self.verified,
             saved: self.saved,
