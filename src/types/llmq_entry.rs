@@ -13,7 +13,7 @@ pub struct LLMQEntry {
     pub llmq_type: LLMQType,
     pub entry_hash: *mut [u8; 32],
     pub llmq_hash: *mut [u8; 32],
-    pub index: u32,
+    pub index: u16,
     pub public_key: *mut [u8; 48],
     pub threshold_signature: *mut [u8; 96],
     pub verification_vector_hash: *mut [u8; 32],
@@ -35,7 +35,7 @@ impl<'a> TryRead<'a, Endian> for LLMQEntry {
         let llmq_type = bytes.read_with::<u8>(offset, LE)?;
         let llmq_hash = boxed(bytes.read_with::<UInt256>(offset, LE)?.0);
         let index = match version {
-            LLMQ_INDEXED_VERSION => bytes.read_with::<u32>(offset, LE)?,
+            LLMQ_INDEXED_VERSION => bytes.read_with::<u16>(offset, LE)?,
             _ => 0,
         };
         let signers_count = bytes.read_with::<dash_spv_primitives::consensus::encode::VarInt>(offset, LE)?;
