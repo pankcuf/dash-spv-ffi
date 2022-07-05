@@ -260,11 +260,14 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
     }
 }
 impl<'a> FromFFI<'a> for types::LLMQSnapshot {
-    type Item = snapshot::LLMQSnapshot<'a>;
+    type Item = snapshot::LLMQSnapshot;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
-            member_list: slice::from_raw_parts(self.member_list, self.member_list_length),
+            member_list: (0..self.member_list_length)
+                .into_iter()
+                .map(|i| *(self.member_list.offset(i as isize)))
+                .collect(),
             skip_list: (0..self.skip_list_length)
                 .into_iter()
                 .map(|i| *(self.skip_list.offset(i as isize)))

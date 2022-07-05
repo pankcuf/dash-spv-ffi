@@ -256,21 +256,16 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
         }
     }
 }
-impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot<'a> {
+impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
     type Item = types::LLMQSnapshot;
 
     fn encode(&self) -> Self::Item {
-        let member_list_length = self.member_list.len();
-        let member_list = boxed_vec(self.member_list.to_vec());
-        let skip_list_length = self.skip_list.len();
-        let skip_list = boxed_vec(self.skip_list.to_vec());
-        let skip_list_mode = self.skip_list_mode;
         Self::Item {
-            member_list_length,
-            member_list,
-            skip_list_length,
-            skip_list,
-            skip_list_mode
+            member_list_length: self.member_list.len(),
+            member_list: boxed_vec(self.member_list.clone()),
+            skip_list_length: self.skip_list.len(),
+            skip_list: boxed_vec(self.skip_list.to_vec()),
+            skip_list_mode: self.skip_list_mode
         }
     }
 }
