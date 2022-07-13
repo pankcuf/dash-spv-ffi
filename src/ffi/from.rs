@@ -9,7 +9,9 @@ use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list}
 use dash_spv_models::masternode::llmq_entry::LLMQ_DEFAULT_VERSION;
 use dash_spv_models::tx::{coinbase_transaction, transaction};
 use dash_spv_primitives::consensus::encode;
+use dash_spv_primitives::consensus::encode::VarInt;
 use dash_spv_primitives::crypto::byte_util::{Reversable, UInt128, UInt160, UInt256, UInt384, UInt768};
+use dash_spv_primitives::crypto::var_array::VarArray;
 use crate::ffi::to::ToFFI;
 use crate::types;
 
@@ -217,8 +219,12 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
             base_block_hash: UInt256(*self.base_block_hash),
             block_hash: UInt256(*self.block_hash),
             total_transactions: self.total_transactions,
-            merkle_hashes: slice::from_raw_parts(self.merkle_hashes, self.merkle_hashes_count),
-            merkle_hashes_count: self.merkle_hashes_count,
+            // merkle_hashes: slice::from_raw_parts(self.merkle_hashes, self.merkle_hashes_count),
+            // merkle_hashes_count: self.merkle_hashes_count,
+            merkle_hashes: VarArray::new(VarInt(self.merkle_hashes_count as u64), (0..self.merkle_hashes_count)
+                .into_iter()
+                .map(|i| UInt256(*(*self.merkle_hashes.offset(i as isize))))
+                .collect()),
             merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count),
             merkle_flags_count: self.merkle_flags_count,
             coinbase_transaction: (*self.coinbase_transaction).decode(),
@@ -254,7 +260,6 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
                         .insert(entry.llmq_hash, entry);
                     acc
                 }),
-            length: self.length,
             block_height: self.block_height
         }
     }

@@ -235,8 +235,11 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
             base_block_hash: boxed(self.base_block_hash.0),
             block_hash: boxed(self.block_hash.0),
             total_transactions: self.total_transactions,
-            merkle_hashes: boxed_vec(self.merkle_hashes.to_vec()),
-            merkle_hashes_count: self.merkle_hashes.len(),
+            merkle_hashes: boxed_vec((0..self.merkle_hashes.1.len())
+                .into_iter()
+                .map(|i| boxed(self.merkle_hashes.1[i].0))
+                .collect()),
+            merkle_hashes_count: self.merkle_hashes.1.len(),
             merkle_flags: boxed_vec(self.merkle_flags.to_vec()),
             merkle_flags_count: self.merkle_flags.len(),
             coinbase_transaction: boxed(self.coinbase_transaction.encode()),
@@ -251,7 +254,6 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
             deleted_quorums: boxed_vec(deleted_quorums_vec),
             added_quorums_count: added_quorums_vec.len(),
             added_quorums: boxed_vec(added_quorums_vec),
-            length: self.length,
             block_height: self.block_height
         }
     }

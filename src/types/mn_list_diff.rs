@@ -1,8 +1,9 @@
 use std::ptr::null_mut;
-use byte::ctx::{Bytes, Endian};
+use byte::ctx::Endian;
 use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_primitives::crypto::{UInt256, VarBytes};
+use dash_spv_primitives::crypto::var_array::VarArray;
 use crate::ffi::boxer::{boxed, boxed_vec};
 use crate::types::coinbase_transaction::CoinbaseTransaction;
 use crate::types::masternode_entry::MasternodeEntry;
@@ -15,7 +16,7 @@ pub struct MNListDiff {
     pub block_hash: *mut [u8; 32],
     pub total_transactions: u32,
 
-    pub merkle_hashes: *mut u8,
+    pub merkle_hashes: *mut *mut [u8; 32],
     pub merkle_hashes_count: usize,
 
     pub merkle_flags: *mut u8,
@@ -35,7 +36,6 @@ pub struct MNListDiff {
     pub added_quorums_count: usize,
     pub added_quorums: *mut *mut LLMQEntry,
 
-    pub length: usize,
     pub block_height: u32,
 }
 
@@ -45,8 +45,8 @@ impl<'a> TryRead<'a, Endian> for MNListDiff {
         let base_block_hash = boxed(bytes.read_with::<UInt256>(offset, LE)?.0);
         let block_hash = boxed(bytes.read_with::<UInt256>(offset, LE)?.0);
         let total_transactions = bytes.read_with::<u32>(offset, LE)?;
-        let merkle_hashes_count = 32 * bytes.read_with::<dash_spv_primitives::consensus::encode::VarInt>(offset, LE)?.0 as usize;
-        let merkle_hashes: &[u8] = bytes.read_with(offset, Bytes::Len(merkle_hashes_count))?;
+        let merkle_hashes = bytes.read_with::<VarArray<UInt256>>(offset, LE)?;
+        let merkle_hashes_vec = boxed_vec(merkle_hashes.1.iter().map(|h| boxed(h.0)).collect());
         let merkle_flags_bytes = bytes.read_with::<VarBytes>(offset, LE)?;
         let coinbase_transaction = bytes.read_with::<CoinbaseTransaction>(offset, LE)?;
         let deleted_masternode_hashes_count = bytes.read_with::<dash_spv_primitives::consensus::encode::VarInt>(offset, LE)?.0 as usize;
@@ -85,8 +85,8 @@ impl<'a> TryRead<'a, Endian> for MNListDiff {
             base_block_hash,
             block_hash,
             total_transactions,
-            merkle_hashes: boxed_vec(merkle_hashes.to_vec()),
-            merkle_hashes_count,
+            merkle_hashes: merkle_hashes_vec,
+            merkle_hashes_count: merkle_hashes.1.len(),
             merkle_flags: boxed_vec(merkle_flags_bytes.1.to_vec()),
             merkle_flags_count: merkle_flags_bytes.0.0 as usize,
             coinbase_transaction: boxed(coinbase_transaction),
@@ -98,8 +98,40 @@ impl<'a> TryRead<'a, Endian> for MNListDiff {
             deleted_quorums,
             added_quorums_count,
             added_quorums,
-            length: *offset,
             block_height: 0
         }, *offset))
     }
 }
+
+// impl MNListDiff {
+//     pub fn from_data(
+//         base_block_hash: UInt256,
+//         block_hash: UInt256,
+//         total_transactions: u32,
+//         merkle_hashes: Vec<u8>,
+//         merkle_flags: Vec<u8>,
+//         coinbase_transaction: types::CoinbaseTransaction,
+//         deleted_masternode_hashes: Vec<UInt256>
+//     ) -> Self {
+//         Self {
+//             base_block_hash: boxed(base_block_hash.0),
+//             block_hash: boxed(block_hash.0),
+//             total_transactions: total_transactions,
+//             merkle_hashes: boxed_vec(merkle_hashes),
+//             merkle_hashes_count: merkle_hashes.len(),
+//             merkle_flags: boxed_vec(merkle_flags),
+//             merkle_flags_count: merkle_flags.len(),
+//             coinbase_transaction: boxed(coinbase_transaction),
+//             deleted_masternode_hashes_count,
+//             deleted_masternode_hashes,
+//             added_or_modified_masternodes_count,
+//             added_or_modified_masternodes,
+//             deleted_quorums_count,
+//             deleted_quorums,
+//             added_quorums_count,
+//             added_quorums,
+//             length: *offset,
+//             block_height: 0
+//         }
+//     }
+// }
