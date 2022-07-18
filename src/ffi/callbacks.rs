@@ -30,10 +30,10 @@ pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_loo
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
         // masternode_list_destroy(data)
-        println!("lookup_masternode_list (Some): {}", block_hash);
+        //println!("lookup_masternode_list (Some): {}", block_hash);
         Some(data)
     } else {
-        println!("lookup_masternode_list (None): {}", block_hash);
+        //println!("lookup_masternode_list (None): {}", block_hash);
         None
     }
 }
