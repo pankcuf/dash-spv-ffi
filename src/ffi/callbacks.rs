@@ -19,6 +19,7 @@ pub type UniversalLookup = unsafe extern "C" fn(block_hash: *mut [u8; 32], conte
 
 pub type GetBlockHashByHeight = unsafe extern "C" fn(block_height: u32, context: *const c_void) -> *const u8; // UIn256
 pub type GetLLMQSnapshotByBlockHeight = unsafe extern "C" fn(block_height: u32, context: *const c_void) -> *const types::LLMQSnapshot;
+pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *const types::LLMQSnapshot;
 pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *const types::LLMQSnapshot, context: *const c_void) -> bool;
 
 pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_lookup: MNL, _masternode_list_destroy: MND) -> Option<masternode::MasternodeList>
@@ -29,8 +30,10 @@ pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_loo
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
         // masternode_list_destroy(data)
+        println!("lookup_masternode_list (Some): {}", block_hash);
         Some(data)
     } else {
+        println!("lookup_masternode_list (None): {}", block_hash);
         None
     }
 }
@@ -55,9 +58,20 @@ pub fn lookup_merkle_root_by_hash<MRL>(block_hash: UInt256, lookup: MRL) -> Opti
     }
 }
 
-pub fn lookup_snapshot<'a, SL>(block_height: u32, snapshot_lookup: SL) -> Option<llmq::LLMQSnapshot>
+pub fn lookup_snapshot<SL>(block_height: u32, snapshot_lookup: SL) -> Option<llmq::LLMQSnapshot>
     where SL: Fn(u32) -> *const types::LLMQSnapshot + Copy {
     let lookup_result = snapshot_lookup(block_height);
+    if !lookup_result.is_null() {
+        let data = unsafe { (*lookup_result).decode() };
+        Some(data)
+    } else {
+        None
+    }
+}
+
+pub fn lookup_snapshot_by_block_hash<SL>(block_hash: UInt256, snapshot_lookup: SL) -> Option<llmq::LLMQSnapshot>
+    where SL: Fn(UInt256) -> *const types::LLMQSnapshot + Copy {
+    let lookup_result = snapshot_lookup(block_hash);
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
         Some(data)
