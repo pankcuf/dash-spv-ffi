@@ -79,7 +79,11 @@ impl<'a> FromFFI<'a> for types::Transaction {
                 .collect(),
             lock_time: self.lock_time,
             version: self.version,
-            tx_hash: None,
+            tx_hash: if self.tx_hash.is_null() {
+                None
+            } else {
+                Some(UInt256(*self.tx_hash))
+            },
             tx_type: self.tx_type,
             payload_offset: self.payload_offset,
             block_height: self.block_height
