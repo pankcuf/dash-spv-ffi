@@ -223,7 +223,7 @@ pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
     unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
     unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }
-pub unsafe fn unbox_llmq_rotation_info_result(result: *mut types::QRInfoResult) {
+pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     let res = unbox_any(result);
     unbox_mn_list_diff_result(res.result_at_tip);
     unbox_mn_list_diff_result(res.result_at_h);
