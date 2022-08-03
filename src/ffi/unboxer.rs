@@ -205,7 +205,7 @@ pub unsafe fn unbox_mn_list_diff(result: *mut types::MNListDiff) {
     unbox_llmq_vec(unbox_vec_ptr(list_diff.added_quorums, list_diff.added_quorums_count));
 }
 
-pub unsafe fn unbox_llmq_rotation_info(result: *mut types::LLMQRotationInfo) {
+pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
     let res = unbox_any(result);
     unbox_llmq_snapshot(res.snapshot_at_h_c);
     unbox_llmq_snapshot(res.snapshot_at_h_2c);
@@ -223,7 +223,7 @@ pub unsafe fn unbox_llmq_rotation_info(result: *mut types::LLMQRotationInfo) {
     unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
     unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }
-pub unsafe fn unbox_llmq_rotation_info_result(result: *mut types::LLMQRotationInfoResult) {
+pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     let res = unbox_any(result);
     unbox_result(res.result_at_tip);
     unbox_result(res.result_at_h);

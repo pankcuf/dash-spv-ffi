@@ -273,7 +273,7 @@ impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
 }
 
 impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
-    type Item = types::LLMQRotationInfo;
+    type Item = types::QRInfo;
 
     fn encode(&self) -> Self::Item {
         let snapshot_at_h_c = boxed(self.snapshot_at_h_c.encode());

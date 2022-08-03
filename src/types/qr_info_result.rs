@@ -2,7 +2,7 @@ use std::ptr::null_mut;
 use crate::types;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
-pub struct LLMQRotationInfoResult {
+pub struct QRInfoResult {
     pub result_at_tip: *mut types::MNListDiffResult,
     pub result_at_h: *mut types::MNListDiffResult,
     pub result_at_h_c: *mut types::MNListDiffResult,
@@ -23,7 +23,7 @@ pub struct LLMQRotationInfoResult {
     pub mn_list_diff_list_count: usize,
 }
 
-impl Default for LLMQRotationInfoResult {
+impl Default for QRInfoResult {
     fn default() -> Self {
         Self {
             result_at_tip: null_mut(),

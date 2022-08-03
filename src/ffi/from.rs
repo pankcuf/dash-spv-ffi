@@ -286,7 +286,7 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
     }
 }
 
-impl<'a> FromFFI<'a> for types::LLMQRotationInfo {
+impl<'a> FromFFI<'a> for types::QRInfo {
     type Item = rotation_info::LLMQRotationInfo<'a>;
 
     unsafe fn decode(&self) -> Self::Item {

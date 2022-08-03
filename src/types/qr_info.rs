@@ -7,7 +7,7 @@ use crate::types::llmq_snapshot::LLMQSnapshot;
 use crate::types::LLMQEntry;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
-pub struct LLMQRotationInfo {
+pub struct QRInfo {
     pub snapshot_at_h_c: *mut LLMQSnapshot,
     pub snapshot_at_h_2c: *mut LLMQSnapshot,
     pub snapshot_at_h_3c: *mut LLMQSnapshot,
@@ -27,9 +27,9 @@ pub struct LLMQRotationInfo {
     pub mn_list_diff_list_count: usize,
 }
 
-impl Default for LLMQRotationInfo {
+impl Default for QRInfo {
     fn default() -> Self {
-        LLMQRotationInfo {
+        QRInfo {
             snapshot_at_h_c: null_mut(),
             snapshot_at_h_2c: null_mut(),
             snapshot_at_h_3c: null_mut(),
@@ -51,7 +51,7 @@ impl Default for LLMQRotationInfo {
     }
 }
 
-impl<'a> TryRead<'a, Endian> for LLMQRotationInfo {
+impl<'a> TryRead<'a, Endian> for QRInfo {
     fn try_read(bytes: &'a [u8], _endian: Endian) -> byte::Result<(Self, usize)> {
         let offset = &mut 0;
         let snapshot_at_h_c = boxed(bytes.read_with::<LLMQSnapshot>(offset, LE)?);
