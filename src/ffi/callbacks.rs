@@ -22,7 +22,7 @@ pub type GetBlockHashByHeight = unsafe extern "C" fn(block_height: u32, context:
 pub type GetLLMQSnapshotByBlockHeight = unsafe extern "C" fn(block_height: u32, context: *const c_void) -> *const types::LLMQSnapshot;
 pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *const types::LLMQSnapshot;
 pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *const types::LLMQSnapshot, context: *const c_void) -> bool;
-pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context: *const c_void) -> bool;
+pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context: *const c_void);
 
 pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_lookup: MNL, _masternode_list_destroy: MND) -> Option<masternode::MasternodeList>
     where
