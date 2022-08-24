@@ -29,7 +29,7 @@ pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_loo
         MNL: Fn(UInt256) -> *const types::MasternodeList + Copy,
         MND: Fn(*const types::MasternodeList) {
     let lookup_result = masternode_list_lookup(block_hash);
-    println!("lookup_masternode_list___: {} {:#?}", block_hash, lookup_result);
+    // println!("lookup_masternode_list___: {} {:#?}", block_hash, lookup_result);
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
         masternode_list_destroy(lookup_result);
