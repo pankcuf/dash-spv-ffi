@@ -24,7 +24,7 @@ pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8;
 pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *const types::LLMQSnapshot, context: *const c_void) -> bool;
 pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context: *const c_void);
 
-pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_lookup: MNL, _masternode_list_destroy: MND) -> Option<masternode::MasternodeList>
+pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_lookup: MNL, masternode_list_destroy: MND) -> Option<masternode::MasternodeList>
     where
         MNL: Fn(UInt256) -> *const types::MasternodeList + Copy,
         MND: Fn(*const types::MasternodeList) {
@@ -32,7 +32,7 @@ pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_loo
     println!("lookup_masternode_list___: {} {:#?}", block_hash, lookup_result);
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
-        // masternode_list_destroy(data)
+        masternode_list_destroy(lookup_result);
         //println!("lookup_masternode_list (Some): {}", block_hash);
         Some(data)
     } else {
