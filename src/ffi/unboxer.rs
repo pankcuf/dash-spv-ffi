@@ -15,6 +15,7 @@ pub unsafe fn unbox_vec_ptr<T>(ptr: *mut T, count: usize) -> Vec<T> {
 }
 
 pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
+    println!("unbox_masternode_entry: {:?}", x);
     let entry = unbox_any(x);
     unbox_any(entry.confirmed_hash);
     if !entry.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_null() {
@@ -31,6 +32,7 @@ pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
 }
 
 pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
+    println!("unbox_llmq_entry: {:?}", x);
     let entry = unbox_any(x);
     unbox_any(entry.all_commitment_aggregated_signature);
     if !entry.commitment_hash.is_null() {
@@ -44,7 +46,9 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     unbox_any(entry.threshold_signature);
     unbox_any(entry.verification_vector_hash);
     let signers_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length);
+    println!("unbox_llmq_entry:signers_bitset {:?}", signers_bitset);
     let valid_members_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length);
+    println!("unbox_llmq_entry:valid_members_bitset {:?}", valid_members_bitset);
     unbox_any(signers_bitset);
     unbox_any(valid_members_bitset);
 }
@@ -57,6 +61,7 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
     }
 }
 pub unsafe fn unbox_masternode_list(masternode_list: Box<types::MasternodeList>) {
+    println!("unbox_llmq_entry: {:?}", masternode_list);
     unbox_any(masternode_list.block_hash);
     if !masternode_list.masternode_merkle_root.is_null() {
         unbox_any(masternode_list.masternode_merkle_root);
@@ -92,12 +97,14 @@ pub unsafe fn unbox_llmq_hash_vec(vec: Vec<*mut types::LLMQTypedHash>) {
 }
 
 pub unsafe fn unbox_llmq_typed_hash(typed_hash: *mut types::LLMQTypedHash) {
+    println!("unbox_llmq_typed_hash: {:?}", typed_hash);
     let hash = unbox_any(typed_hash);
     unbox_any(hash.llmq_hash);
 }
 
 pub unsafe fn unbox_llmq_validation_data(llmq_validation_data: *mut types::LLMQValidationData) {
     let result = unbox_any(llmq_validation_data);
+    println!("unbox_llmq_validation_data: {:?}", llmq_validation_data);
     unbox_any(result.all_commitment_aggregated_signature);
     unbox_any(result.commitment_hash);
     unbox_any(result.public_key);
@@ -133,10 +140,12 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 }
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
+    println!("unbox_llmq_snapshot: {:?}", quorum_snapshot);
     let result = unbox_any(quorum_snapshot);
     unbox_vec_ptr(result.member_list, result.member_list_length);
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
+    println!("unbox_tx_input: {:?}", result);
     let input = unbox_any(result);
     unbox_any(input.input_hash);
     if !input.script.is_null() && input.script_length > 0 {
@@ -147,6 +156,7 @@ pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     }
 }
 pub unsafe fn unbox_tx_output(result: *mut types::TransactionOutput) {
+    println!("unbox_tx_output: {:?}", result);
     let output = unbox_any(result);
     if !output.script.is_null() && output.script_length > 0 {
         unbox_any(std::ptr::slice_from_raw_parts_mut(output.script, output.script_length) as *mut [u8]);
@@ -166,6 +176,7 @@ pub unsafe fn unbox_tx_output_vec(result: Vec<*mut types::TransactionOutput>) {
     }
 }
 pub unsafe fn unbox_tx(result: *mut types::Transaction) {
+    println!("unbox_tx: {:?}", result);
     let tx = unbox_any(result);
     unbox_tx_input_vec(unbox_vec_ptr(tx.inputs, tx.inputs_count));
     unbox_tx_output_vec(unbox_vec_ptr(tx.outputs, tx.outputs_count));
@@ -173,6 +184,7 @@ pub unsafe fn unbox_tx(result: *mut types::Transaction) {
 }
 
 pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
+    println!("unbox_coinbase_tx: {:?}", result);
     let ctx = unbox_any(result);
     unbox_tx(ctx.base);
     unbox_any(ctx.merkle_root_mn_list);
@@ -182,6 +194,7 @@ pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
 }
 
 pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
+    println!("unbox_mn_list_diff_result: {:?}", result);
     let res = unbox_any(result);
     unbox_any(res.block_hash);
     unbox_masternode_list(unbox_any(res.masternode_list));
@@ -191,6 +204,7 @@ pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     unbox_llmq_map_vec(unbox_vec_ptr(res.added_llmq_type_maps, res.added_llmq_type_maps_count));
 }
 pub unsafe fn unbox_mn_list_diff(result: *mut types::MNListDiff) {
+    println!("unbox_mn_list_diff: {:?}", result);
     let list_diff = unbox_any(result);
     unbox_any(list_diff.base_block_hash);
     unbox_any(list_diff.block_hash);
@@ -206,6 +220,7 @@ pub unsafe fn unbox_mn_list_diff(result: *mut types::MNListDiff) {
 }
 
 pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
+    println!("unbox_qr_info: {:?}", result);
     let res = unbox_any(result);
     unbox_llmq_snapshot(res.snapshot_at_h_c);
     unbox_llmq_snapshot(res.snapshot_at_h_2c);
@@ -224,6 +239,7 @@ pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
     unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }
 pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
+    println!("unbox_qr_info_result: {:?}", result);
     let res = unbox_any(result);
     unbox_mn_list_diff_result(res.result_at_tip);
     unbox_mn_list_diff_result(res.result_at_h);
@@ -240,5 +256,4 @@ pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     unbox_llmq_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
     unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
     unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
-    // unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
 }
