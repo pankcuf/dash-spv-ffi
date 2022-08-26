@@ -17,38 +17,55 @@ pub unsafe fn unbox_vec_ptr<T>(ptr: *mut T, count: usize) -> Vec<T> {
 pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
     println!("unbox_masternode_entry: {:?}", x);
     let entry = unbox_any(x);
+    println!("unbox_masternode_entry.confirmed_hash: {:?}", entry.confirmed_hash);
     unbox_any(entry.confirmed_hash);
     if !entry.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_null() {
+        println!("unbox_masternode_entry.confirmed_hash_hashed_with_provider_registration_transaction_hash: {:?}", entry.confirmed_hash_hashed_with_provider_registration_transaction_hash);
         unbox_any(entry.confirmed_hash_hashed_with_provider_registration_transaction_hash);
     }
+    println!("unbox_masternode_entry.key_id_voting: {:?}", entry.key_id_voting);
     unbox_any(entry.key_id_voting);
+    println!("unbox_masternode_entry.entry_hash: {:?}", entry.entry_hash);
     unbox_any(entry.entry_hash);
+    println!("unbox_masternode_entry.operator_public_key: {:?}", entry.operator_public_key);
     unbox_any(entry.operator_public_key);
+    println!("unbox_masternode_entry.previous_entry_hashes: {:?}", entry.previous_entry_hashes);
     unbox_vec_ptr(entry.previous_entry_hashes, entry.previous_entry_hashes_count);
+    println!("unbox_masternode_entry.previous_operator_public_keys: {:?}", entry.previous_operator_public_keys);
     unbox_vec_ptr(entry.previous_operator_public_keys, entry.previous_operator_public_keys_count);
+    println!("unbox_masternode_entry.previous_validity: {:?}", entry.previous_validity);
     unbox_vec_ptr(entry.previous_validity, entry.previous_validity_count);
+    println!("unbox_masternode_entry.provider_registration_transaction_hash: {:?}", entry.provider_registration_transaction_hash);
     unbox_any(entry.provider_registration_transaction_hash);
+    println!("unbox_masternode_entry.ip_address: {:?}", entry.ip_address);
     unbox_any(entry.ip_address);
 }
 
 pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     println!("unbox_llmq_entry: {:?}", x);
     let entry = unbox_any(x);
+    println!("unbox_llmq_entry.all_commitment_aggregated_signature: {:?}", entry.all_commitment_aggregated_signature);
     unbox_any(entry.all_commitment_aggregated_signature);
     if !entry.commitment_hash.is_null() {
+        println!("unbox_llmq_entry.commitment_hash: {:?}", entry.commitment_hash);
         unbox_any(entry.commitment_hash);
     }
-    // println!("unbox_llmq_entry.entry_hash: {:?}", entry.entry_hash);
+    println!("unbox_llmq_entry.entry_hash: {:?}", entry.entry_hash);
     unbox_any(entry.entry_hash);
-    // println!("unbox_llmq_entry.llmq_hash =>: {:?}", entry.llmq_hash);
+    println!("unbox_llmq_entry.llmq_hash: {:?}", entry.llmq_hash);
     unbox_any(entry.llmq_hash);
+    println!("unbox_llmq_entry.public_key: {:?}", entry.public_key);
     unbox_any(entry.public_key);
+    println!("unbox_llmq_entry.threshold_signature: {:?}", entry.threshold_signature);
     unbox_any(entry.threshold_signature);
+    println!("unbox_llmq_entry.verification_vector_hash: {:?}", entry.verification_vector_hash);
     unbox_any(entry.verification_vector_hash);
+    println!("unbox_llmq_entry.signers_bitset.1 {:?}", entry.signers_bitset);
     let signers_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length);
-    println!("unbox_llmq_entry:signers_bitset {:?}", signers_bitset);
+    println!("unbox_llmq_entry.signers_bitset.2 {:?}", signers_bitset);
+    println!("unbox_llmq_entry.valid_members_bitset.1 {:?}", entry.valid_members_bitset);
     let valid_members_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length);
-    println!("unbox_llmq_entry:valid_members_bitset {:?}", valid_members_bitset);
+    println!("unbox_llmq_entry.valid_members_bitset.2 {:?}", valid_members_bitset);
     unbox_any(signers_bitset);
     unbox_any(valid_members_bitset);
 }
@@ -61,7 +78,7 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
     }
 }
 pub unsafe fn unbox_masternode_list(masternode_list: Box<types::MasternodeList>) {
-    println!("unbox_llmq_entry: {:?}", masternode_list);
+    println!("unbox_masternode_list: {:?}", masternode_list);
     unbox_any(masternode_list.block_hash);
     if !masternode_list.masternode_merkle_root.is_null() {
         unbox_any(masternode_list.masternode_merkle_root);
