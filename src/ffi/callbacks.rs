@@ -24,6 +24,7 @@ pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8;
 pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *const types::LLMQSnapshot, context: *const c_void) -> bool;
 pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context: *const c_void);
 pub type HashDestroy = unsafe extern "C" fn(hash: *const u8);
+pub type LLMQSnapshotDestroy = unsafe extern "C" fn(snapshot: *const types::LLMQSnapshot);
 
 fn read_and_destroy_hash<DH>(lookup_result: *const u8, destroy_hash: DH) -> Option<UInt256>
     where
