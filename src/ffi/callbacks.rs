@@ -67,24 +67,15 @@ pub fn lookup_merkle_root_by_hash<MRL, DH>(block_hash: UInt256, lookup: MRL, des
     read_and_destroy_hash(lookup(block_hash), destroy_hash)
 }
 
-pub fn lookup_snapshot<SL>(block_height: u32, snapshot_lookup: SL) -> Option<llmq::LLMQSnapshot>
+pub fn lookup_snapshot_by_block_hash<SL, SD>(block_hash: UInt256, snapshot_lookup: SL, snapshot_destroy: SD) -> Option<llmq::LLMQSnapshot>
     where
-        SL: Fn(u32) -> *const types::LLMQSnapshot + Copy {
-    let lookup_result = snapshot_lookup(block_height);
-    if !lookup_result.is_null() {
-        let data = unsafe { (*lookup_result).decode() };
-        Some(data)
-    } else {
-        None
-    }
-}
-
-pub fn lookup_snapshot_by_block_hash<SL>(block_hash: UInt256, snapshot_lookup: SL) -> Option<llmq::LLMQSnapshot>
-    where
-        SL: Fn(UInt256) -> *const types::LLMQSnapshot + Copy {
+        SL: Fn(UInt256) -> *const types::LLMQSnapshot + Copy,
+        SD: Fn(*const types::LLMQSnapshot)
+{
     let lookup_result = snapshot_lookup(block_hash);
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
+        snapshot_destroy(lookup_result);
         Some(data)
     } else {
         None
