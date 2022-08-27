@@ -79,11 +79,14 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
 }
 pub unsafe fn unbox_masternode_list(masternode_list: Box<types::MasternodeList>) {
     println!("unbox_masternode_list: {:?}", masternode_list);
+    println!("unbox_masternode_list.block_hash: {:?}", masternode_list.block_hash);
     unbox_any(masternode_list.block_hash);
     if !masternode_list.masternode_merkle_root.is_null() {
+        println!("unbox_masternode_list.masternode_merkle_root: {:?}", masternode_list.masternode_merkle_root);
         unbox_any(masternode_list.masternode_merkle_root);
     }
     if !masternode_list.llmq_merkle_root.is_null() {
+        println!("unbox_masternode_list.llmq_merkle_root: {:?}", masternode_list.llmq_merkle_root);
         unbox_any(masternode_list.llmq_merkle_root);
     }
     unbox_masternode_vec(unbox_vec_ptr(masternode_list.masternodes, masternode_list.masternodes_count));
