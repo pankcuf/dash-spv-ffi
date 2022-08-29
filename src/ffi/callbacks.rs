@@ -12,17 +12,16 @@ pub type ValidateLLMQCallback = unsafe extern "C" fn(data: *mut types::LLMQValid
 
 pub type GetBlockHeightByHash = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> u32;
 pub type MerkleRootLookup = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *mut u8; // UIn256
-pub type MasternodeListLookup = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *const types::MasternodeList;
-pub type MasternodeListDestroy = unsafe extern "C" fn(masternode_list: *const types::MasternodeList);
-pub type MasternodeListSave = unsafe extern "C" fn(block_hash: *mut [u8; 32], masternode_list: *const types::MasternodeList, context: *const c_void) -> bool;
+pub type MasternodeListLookup = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *mut types::MasternodeList;
+pub type MasternodeListDestroy = unsafe extern "C" fn(masternode_list: *mut types::MasternodeList);
+pub type MasternodeListSave = unsafe extern "C" fn(block_hash: *mut [u8; 32], masternode_list: *mut types::MasternodeList, context: *const c_void) -> bool;
 
 pub type GetBlockHashByHeight = unsafe extern "C" fn(block_height: u32, context: *const c_void) -> *mut u8; // UIn256
-pub type GetLLMQSnapshotByBlockHeight = unsafe extern "C" fn(block_height: u32, context: *const c_void) -> *const types::LLMQSnapshot;
-pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *const types::LLMQSnapshot;
-pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *const types::LLMQSnapshot, context: *const c_void) -> bool;
+pub type GetLLMQSnapshotByBlockHash = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *mut types::LLMQSnapshot;
+pub type SaveLLMQSnapshot = unsafe extern "C" fn(block_hash: *mut [u8; 32], snapshot: *mut types::LLMQSnapshot, context: *const c_void) -> bool;
 pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context: *const c_void);
 pub type HashDestroy = unsafe extern "C" fn(hash: *mut u8);
-pub type LLMQSnapshotDestroy = unsafe extern "C" fn(snapshot: *const types::LLMQSnapshot);
+pub type LLMQSnapshotDestroy = unsafe extern "C" fn(snapshot: *mut types::LLMQSnapshot);
 
 fn read_and_destroy_hash<DH>(lookup_result: *mut u8, destroy_hash: DH) -> Option<UInt256>
     where
@@ -38,9 +37,11 @@ fn read_and_destroy_hash<DH>(lookup_result: *mut u8, destroy_hash: DH) -> Option
 
 pub fn lookup_masternode_list<MNL, MND>(block_hash: UInt256, masternode_list_lookup: MNL, masternode_list_destroy: MND) -> Option<masternode::MasternodeList>
     where
-        MNL: Fn(UInt256) -> *const types::MasternodeList + Copy,
-        MND: Fn(*const types::MasternodeList) {
+        MNL: Fn(UInt256) -> *mut types::MasternodeList + Copy,
+        MND: Fn(*mut types::MasternodeList) {
+    println!("lookup_masternode_list.0: {:#?}", block_hash);
     let lookup_result = masternode_list_lookup(block_hash);
+    println!("lookup_masternode_list.1: {:#?}", lookup_result);
     if !lookup_result.is_null() {
         let data = unsafe { (*lookup_result).decode() };
         masternode_list_destroy(lookup_result);
@@ -66,8 +67,8 @@ pub fn lookup_merkle_root_by_hash<MRL, DH>(block_hash: UInt256, lookup: MRL, des
 
 pub fn lookup_snapshot_by_block_hash<SL, SD>(block_hash: UInt256, snapshot_lookup: SL, snapshot_destroy: SD) -> Option<llmq::LLMQSnapshot>
     where
-        SL: Fn(UInt256) -> *const types::LLMQSnapshot + Copy,
-        SD: Fn(*const types::LLMQSnapshot)
+        SL: Fn(UInt256) -> *mut types::LLMQSnapshot + Copy,
+        SD: Fn(*mut types::LLMQSnapshot)
 {
     let lookup_result = snapshot_lookup(block_hash);
     if !lookup_result.is_null() {
@@ -78,27 +79,3 @@ pub fn lookup_snapshot_by_block_hash<SL, SD>(block_hash: UInt256, snapshot_looku
         None
     }
 }
-
-/*
-pub type HashTestDestroy = unsafe extern "C" fn(hash: *mut u8);
-pub type HashTestLookup = unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void) -> *mut u8; // UIn256
-
-pub fn lookup_test_hash<MRL, DH>(block_hash: UInt256, lookup: MRL, destroy_hash: DH) -> Option<UInt256>
-    where
-        MRL: Fn(UInt256) -> *mut u8 + Copy,
-        DH: Fn(*mut u8) {
-    let lookup_result = lookup(block_hash);
-    if !lookup_result.is_null() {
-
-        let safe_bytes = unsafe { slice::from_raw_parts_mut(lookup_result, 32) };
-        match safe_bytes.read_with::<UInt256>(&mut 0, byte::LE) {
-            Ok(data) => {
-                destroy_hash(lookup_result);
-                Some(data)
-            },
-            Err(_err) => None
-        }
-    } else {
-        None
-    }
-}*/
