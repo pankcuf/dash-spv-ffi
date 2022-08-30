@@ -237,6 +237,9 @@ pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
 pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     println!("unbox_mn_list_diff_result: {:?}", result);
     let res = unbox_any(result);
+    if res.error_status > 0 {
+        return;
+    }
     println!("unbox_mn_list_diff_result.base_block_hash: {:?}", res.base_block_hash);
     unbox_any(res.base_block_hash);
     println!("unbox_mn_list_diff_result.block_hash: {:?}", res.block_hash);
@@ -312,6 +315,9 @@ pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
 pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     println!("unbox_qr_info_result: {:?}", result);
     let res = unbox_any(result);
+    if res.error_status > 0 {
+        return;
+    }
     println!("unbox_qr_info_result.result_at_tip: {:?}", res.result_at_tip);
     unbox_mn_list_diff_result(res.result_at_tip);
     println!("unbox_qr_info_result.result_at_h: {:?}", res.result_at_h);
