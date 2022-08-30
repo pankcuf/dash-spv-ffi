@@ -3,6 +3,7 @@ use crate::types;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct MNListDiffResult {
+    pub error_status: u8,
     pub base_block_hash: *mut [u8; 32],
     pub block_hash: *mut [u8; 32],
     pub has_found_coinbase: bool, //1 byte
@@ -20,10 +21,18 @@ pub struct MNListDiffResult {
     pub needed_masternode_lists:  *mut *mut [u8; 32], // [u8; 32]
     pub needed_masternode_lists_count: usize,
 }
+impl MNListDiffResult {
+    pub fn default_with_error(error: u8) -> Self {
+        let mut result = Self::default();
+        result.error_status = error;
+        result
+    }
+}
 
 impl Default for MNListDiffResult {
     fn default() -> Self {
         MNListDiffResult {
+            error_status: 0,
             base_block_hash: null_mut(),
             block_hash: null_mut(),
             has_found_coinbase: false,

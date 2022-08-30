@@ -3,6 +3,7 @@ use crate::types;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct QRInfoResult {
+    pub error_status: u8,
     pub result_at_tip: *mut types::MNListDiffResult,
     pub result_at_h: *mut types::MNListDiffResult,
     pub result_at_h_c: *mut types::MNListDiffResult,
@@ -26,6 +27,7 @@ pub struct QRInfoResult {
 impl Default for QRInfoResult {
     fn default() -> Self {
         Self {
+            error_status: 0,
             result_at_tip: null_mut(),
             result_at_h: null_mut(),
             result_at_h_c: null_mut(),
@@ -46,3 +48,12 @@ impl Default for QRInfoResult {
         }
     }
 }
+
+impl QRInfoResult {
+    pub fn default_with_error(error: u8) -> Self {
+        let mut result = Self::default();
+        result.error_status = error;
+        result
+    }
+}
+
