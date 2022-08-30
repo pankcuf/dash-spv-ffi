@@ -3,6 +3,7 @@ use crate::types;
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
 pub struct MNListDiffResult {
+    pub base_block_hash: *mut [u8; 32],
     pub block_hash: *mut [u8; 32],
     pub has_found_coinbase: bool, //1 byte
     pub has_valid_coinbase: bool, //1 byte
@@ -23,6 +24,7 @@ pub struct MNListDiffResult {
 impl Default for MNListDiffResult {
     fn default() -> Self {
         MNListDiffResult {
+            base_block_hash: null_mut(),
             block_hash: null_mut(),
             has_found_coinbase: false,
             has_valid_coinbase: false,

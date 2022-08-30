@@ -237,6 +237,8 @@ pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
 pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     println!("unbox_mn_list_diff_result: {:?}", result);
     let res = unbox_any(result);
+    println!("unbox_mn_list_diff_result.base_block_hash: {:?}", res.base_block_hash);
+    unbox_any(res.base_block_hash);
     println!("unbox_mn_list_diff_result.block_hash: {:?}", res.block_hash);
     unbox_any(res.block_hash);
     println!("unbox_mn_list_diff_result.masternode_list: {:?}", res.masternode_list);
