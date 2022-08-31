@@ -135,43 +135,58 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
     type Item = types::MasternodeEntry;
 
     fn encode(&self) -> Self::Item {
+        println!("MasternodeEntry.encode: {:?}", self);
         let previous_operator_public_keys_count = self.previous_operator_public_keys.len();
         let previous_entry_hashes_count = self.previous_entry_hashes.len();
         let previous_validity_count = self.previous_validity.len();
+        let confirmed_hash = boxed(self.confirmed_hash.0);
+        let confirmed_hash_hashed_with_provider_registration_transaction_hash = if self.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_none() {
+            null_mut()
+        } else {
+            boxed(self.confirmed_hash_hashed_with_provider_registration_transaction_hash.unwrap().0)
+        };
+        let key_id_voting = boxed(self.key_id_voting.0);
+        let known_confirmed_at_height = self.known_confirmed_at_height.unwrap_or(0);
+        let entry_hash = boxed(self.entry_hash.0);
+        let operator_public_key = boxed(self.operator_public_key.0);
+        let previous_operator_public_keys = boxed_vec(self.previous_operator_public_keys
+            .iter()
+            .map(|(&Block {hash, height: block_height}, &key)|
+                types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
+            .collect());
+        let previous_entry_hashes = boxed_vec(self.previous_entry_hashes
+            .iter()
+            .map(|(&Block { hash: block_hash, height: block_height}, &hash)|
+                types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
+            .collect());
+        let previous_validity = boxed_vec(self.previous_validity
+            .iter()
+            .map(|(&Block { hash, height: block_height}, &is_valid)|
+                types::Validity { block_hash: hash.0, block_height, is_valid })
+            .collect());
+        let provider_registration_transaction_hash = boxed(self.provider_registration_transaction_hash.0);
+        let ip_address = boxed(self.socket_address.ip_address.0);
+        let port = self.socket_address.port;
+        let is_valid = self.is_valid;
+        let update_height = self.update_height;
         Self::Item {
-            confirmed_hash: boxed(self.confirmed_hash.0),
-            confirmed_hash_hashed_with_provider_registration_transaction_hash: if self.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_none() {
-                null_mut()
-            } else {
-                boxed(self.confirmed_hash_hashed_with_provider_registration_transaction_hash.unwrap().0)
-            },
-            is_valid: self.is_valid,
-            key_id_voting: boxed(self.key_id_voting.0),
-            known_confirmed_at_height: self.known_confirmed_at_height.unwrap_or(0),
-            entry_hash: boxed(self.entry_hash.0),
-            operator_public_key: boxed(self.operator_public_key.0),
-            previous_operator_public_keys: boxed_vec(self.previous_operator_public_keys
-                .iter()
-                .map(|(&Block {hash, height: block_height}, &key)|
-                    types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
-                .collect()),
+            confirmed_hash,
+            confirmed_hash_hashed_with_provider_registration_transaction_hash,
+            is_valid,
+            key_id_voting,
+            known_confirmed_at_height,
+            entry_hash,
+            operator_public_key,
+            previous_operator_public_keys,
             previous_operator_public_keys_count,
-            previous_entry_hashes: boxed_vec(self.previous_entry_hashes
-                .iter()
-                .map(|(&Block { hash: block_hash, height: block_height}, &hash)|
-                    types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
-                .collect()),
+            previous_entry_hashes,
             previous_entry_hashes_count,
-            previous_validity: boxed_vec(self.previous_validity
-                .iter()
-                .map(|(&Block { hash, height: block_height}, &is_valid)|
-                    types::Validity { block_hash: hash.0, block_height, is_valid })
-                .collect()),
+            previous_validity,
             previous_validity_count,
-            provider_registration_transaction_hash: boxed(self.provider_registration_transaction_hash.0),
-            ip_address: boxed(self.socket_address.ip_address.0),
-            port: self.socket_address.port,
-            update_height: self.update_height
+            provider_registration_transaction_hash,
+            ip_address,
+            port,
+            update_height
         }
     }
 }
