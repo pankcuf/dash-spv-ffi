@@ -140,32 +140,42 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
         let previous_entry_hashes_count = self.previous_entry_hashes.len();
         let previous_validity_count = self.previous_validity.len();
         let confirmed_hash = boxed(self.confirmed_hash.0);
+        println!("MasternodeEntry.encode.confirmed_hash: {:?}", confirmed_hash);
         let confirmed_hash_hashed_with_provider_registration_transaction_hash = if self.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_none() {
             null_mut()
         } else {
             boxed(self.confirmed_hash_hashed_with_provider_registration_transaction_hash.unwrap().0)
         };
+        println!("MasternodeEntry.encode.confirmed_hash_hashed_with_provider_registration_transaction_hash: {:?}", confirmed_hash_hashed_with_provider_registration_transaction_hash);
         let key_id_voting = boxed(self.key_id_voting.0);
+        println!("MasternodeEntry.encode.key_id_voting: {:?}", key_id_voting);
         let known_confirmed_at_height = self.known_confirmed_at_height.unwrap_or(0);
         let entry_hash = boxed(self.entry_hash.0);
+        println!("MasternodeEntry.encode.entry_hash: {:?}", entry_hash);
         let operator_public_key = boxed(self.operator_public_key.0);
+        println!("MasternodeEntry.encode.entry_hash: {:?}", operator_public_key);
         let previous_operator_public_keys = boxed_vec(self.previous_operator_public_keys
             .iter()
             .map(|(&Block {hash, height: block_height}, &key)|
                 types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
             .collect());
+        println!("MasternodeEntry.encode.previous_operator_public_keys: {:?}", previous_operator_public_keys);
         let previous_entry_hashes = boxed_vec(self.previous_entry_hashes
             .iter()
             .map(|(&Block { hash: block_hash, height: block_height}, &hash)|
                 types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
             .collect());
+        println!("MasternodeEntry.encode.previous_entry_hashes: {:?}", previous_entry_hashes);
         let previous_validity = boxed_vec(self.previous_validity
             .iter()
             .map(|(&Block { hash, height: block_height}, &is_valid)|
                 types::Validity { block_hash: hash.0, block_height, is_valid })
             .collect());
+        println!("MasternodeEntry.encode.previous_validity: {:?}", previous_validity);
         let provider_registration_transaction_hash = boxed(self.provider_registration_transaction_hash.0);
+        println!("MasternodeEntry.encode.provider_registration_transaction_hash: {:?}", provider_registration_transaction_hash);
         let ip_address = boxed(self.socket_address.ip_address.0);
+        println!("MasternodeEntry.encode.ip_address: {:?}", ip_address);
         let port = self.socket_address.port;
         let is_valid = self.is_valid;
         let update_height = self.update_height;
@@ -196,29 +206,56 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
 
     fn encode(&self) -> Self::Item {
         //println!("LLMQEntry.to: {:?} {} {}", self.entry_hash, self.signers_bitset.to_hex(), self.signers_bitset.len());
+        let all_commitment_aggregated_signature = boxed(self.all_commitment_aggregated_signature.0);
+        println!("LLMQEntry.encode.all_commitment_aggregated_signature: {:?}", all_commitment_aggregated_signature);
+        let commitment_hash = if self.commitment_hash.is_none() {
+            null_mut()
+        } else {
+            boxed(self.commitment_hash.unwrap().0)
+        };
+        println!("LLMQEntry.encode.commitment_hash: {:?}", commitment_hash);
+        let llmq_type = self.llmq_type;
+        let entry_hash = boxed(self.entry_hash.0);
+        println!("LLMQEntry.encode.entry_hash: {:?}", entry_hash);
+        let llmq_hash = boxed(self.llmq_hash.0);
+        println!("LLMQEntry.encode.llmq_hash: {:?}", llmq_hash);
+        let public_key = boxed(self.public_key.0);
+        println!("LLMQEntry.encode.public_key: {:?}", public_key);
+        let threshold_signature = boxed(self.threshold_signature.0);
+        println!("LLMQEntry.encode.threshold_signature: {:?}", threshold_signature);
+        let verification_vector_hash = boxed(self.verification_vector_hash.0);
+        println!("LLMQEntry.encode.verification_vector_hash: {:?}", verification_vector_hash);
+        let index = self.index.unwrap_or(0);
+        let saved = self.saved;
+        let verified = self.verified;
+        let version = self.version;
+        let signers_count = self.signers_count.0;
+        let valid_members_count = self.valid_members_count.0;
+        let signers_bitset = boxed_vec(self.signers_bitset.clone());
+        println!("LLMQEntry.encode.signers_bitset: {:?}", signers_bitset);
+        let signers_bitset_length = self.signers_bitset.len();
+        let valid_members_bitset = boxed_vec(self.valid_members_bitset.clone());
+        println!("LLMQEntry.encode.valid_members_bitset: {:?}", valid_members_bitset);
+        let valid_members_bitset_length = self.valid_members_bitset_length.len();
         Self::Item {
-            all_commitment_aggregated_signature: boxed(self.all_commitment_aggregated_signature.0),
-            commitment_hash: if self.commitment_hash.is_none() {
-                null_mut()
-            } else {
-                boxed(self.commitment_hash.unwrap().0)
-            },
-            llmq_type: self.llmq_type,
-            entry_hash: boxed(self.entry_hash.0),
-            llmq_hash: boxed(self.llmq_hash.0),
-            index: self.index.unwrap_or(0),
-            public_key: boxed(self.public_key.0),
-            threshold_signature: boxed(self.threshold_signature.0),
-            verification_vector_hash: boxed(self.verification_vector_hash.0),
-            saved: self.saved,
-            signers_bitset: boxed_vec(self.signers_bitset.clone()),
-            signers_bitset_length: self.signers_bitset.len(),
-            signers_count: self.signers_count.0,
-            valid_members_bitset: boxed_vec(self.valid_members_bitset.clone()),
-            valid_members_bitset_length: self.valid_members_bitset.len(),
-            valid_members_count: self.valid_members_count.0,
-            verified: self.verified,
-            version: self.version,
+            all_commitment_aggregated_signature,
+            commitment_hash,
+            llmq_type,
+            entry_hash,
+            llmq_hash,
+            index,
+            public_key,
+            threshold_signature,
+            verification_vector_hash,
+            saved,
+            signers_bitset,
+            signers_bitset_length,
+            signers_count,
+            valid_members_bitset,
+            valid_members_bitset_length,
+            valid_members_count,
+            verified,
+            version,
         }
     }
 }
