@@ -236,7 +236,7 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
         let signers_bitset_length = self.signers_bitset.len();
         let valid_members_bitset = boxed_vec(self.valid_members_bitset.clone());
         println!("LLMQEntry.encode.valid_members_bitset: {:?}", valid_members_bitset);
-        let valid_members_bitset_length = self.valid_members_bitset_length.len();
+        let valid_members_bitset_length = self.valid_members_bitset.len();
         Self::Item {
             all_commitment_aggregated_signature,
             commitment_hash,
