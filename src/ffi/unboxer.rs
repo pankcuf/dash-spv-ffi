@@ -79,8 +79,9 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
         unbox_llmq_entry(x);
     }
 }
-pub unsafe fn unbox_masternode_list(masternode_list: Box<types::MasternodeList>) {
-    println!("unbox_masternode_list: {:?}", masternode_list);
+pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
+    println!("unbox_masternode_list: {:?}", list);
+    let masternode_list = unbox_any(list);
     println!("unbox_masternode_list.block_hash: {:?}", masternode_list.block_hash);
     unbox_any(masternode_list.block_hash);
     if !masternode_list.masternode_merkle_root.is_null() {
@@ -245,7 +246,7 @@ pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     println!("unbox_mn_list_diff_result.block_hash: {:?}", res.block_hash);
     unbox_any(res.block_hash);
     println!("unbox_mn_list_diff_result.masternode_list: {:?}", res.masternode_list);
-    unbox_masternode_list(unbox_any(res.masternode_list));
+    unbox_masternode_list(res.masternode_list);
     println!("unbox_mn_list_diff_result.needed_masternode_lists: {:?}", res.needed_masternode_lists);
     unbox_vec(unbox_vec_ptr(res.needed_masternode_lists, res.needed_masternode_lists_count));
     println!("unbox_mn_list_diff_result.added_masternodes: {:?}", res.added_masternodes);
