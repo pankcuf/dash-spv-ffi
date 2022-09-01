@@ -175,9 +175,9 @@ pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     println!("unbox_llmq_snapshot.member_list: {:?}", result.member_list);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(result.member_list, result.member_list_length));
     // TODO: AAA
-    println!("unbox_llmq_snapshot.member_list: {:?}", result.skip_list);
-    // unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
-    unbox_vec_ptr(result.skip_list, result.skip_list_length);
+    println!("unbox_llmq_snapshot.skip_list: {:?}", result.skip_list);
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
+    // unbox_vec_ptr(result.skip_list, result.skip_list_length);
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     println!("unbox_tx_input: {:?}", result);
@@ -272,7 +272,7 @@ pub unsafe fn unbox_mn_list_diff(result: *mut types::MNListDiff) {
     unbox_vec(unbox_vec_ptr(list_diff.merkle_hashes, list_diff.merkle_hashes_count));
     //unbox_any(std::ptr::slice_from_raw_parts_mut(list_diff.merkle_hashes, list_diff.merkle_hashes_count) as *mut [u8]);
     println!("unbox_mn_list_diff.merkle_flags: {:?}", list_diff.merkle_flags);
-    unbox_any(std::ptr::slice_from_raw_parts_mut(list_diff.merkle_flags, list_diff.merkle_flags_count) as *mut [u8]);
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(list_diff.merkle_flags, list_diff.merkle_flags_count));
     println!("unbox_mn_list_diff.coinbase_transaction: {:?}", list_diff.coinbase_transaction);
     unbox_coinbase_tx(list_diff.coinbase_transaction);
     println!("unbox_mn_list_diff.deleted_masternode_hashes: {:?}", list_diff.deleted_masternode_hashes);

@@ -272,7 +272,14 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
     type Item = snapshot::LLMQSnapshot;
 
     unsafe fn decode(&self) -> Self::Item {
+        let member_list_bytes = slice::from_raw_parts::<u8>(self.member_list, self.member_list_length);
+        let skip_list_bytes = slice::from_raw_parts::<u32>(self.skip_list, self.skip_list_length);
         Self::Item {
+            member_list: member_list_bytes.to_vec(),
+            skip_list: skip_list_bytes.to_vec(),
+            skip_list_mode: self.skip_list_mode
+        }
+        /*Self::Item {
             member_list: (0..self.member_list_length)
                 .into_iter()
                 .map(|i| *(self.member_list.offset(i as isize)))
@@ -282,7 +289,7 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
                 .map(|i| *(self.skip_list.offset(i as isize)))
                 .collect(),
             skip_list_mode: self.skip_list_mode
-        }
+        }*/
     }
 }
 
