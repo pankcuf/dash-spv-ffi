@@ -60,12 +60,10 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     unbox_any(entry.threshold_signature);
     println!("unbox_llmq_entry.verification_vector_hash: {:?}", entry.verification_vector_hash);
     unbox_any(entry.verification_vector_hash);
-    println!("unbox_llmq_entry.signers_bitset.1 {:?}", entry.signers_bitset);
+    println!("unbox_llmq_entry.signers_bitset {:?}", entry.signers_bitset);
     let signers_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length);
-    println!("unbox_llmq_entry.signers_bitset.2 {:?}", signers_bitset);
-    println!("unbox_llmq_entry.valid_members_bitset.1 {:?}", entry.valid_members_bitset);
+    println!("unbox_llmq_entry.valid_members_bitset {:?}", entry.valid_members_bitset);
     let valid_members_bitset = std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length);
-    println!("unbox_llmq_entry.valid_members_bitset.2 {:?}", valid_members_bitset);
     unbox_any(signers_bitset);
     unbox_any(valid_members_bitset);
 }
