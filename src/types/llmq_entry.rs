@@ -7,7 +7,7 @@ use dash_spv_primitives::crypto::byte_util::{UInt256, UInt384, UInt768};
 use crate::ffi::boxer::{boxed, boxed_vec};
 
 #[repr(C)] #[derive(Clone, Copy, Debug)]
-pub struct LLMQEntry {
+pub struct LLMQEntry { // 144 bytes
     pub all_commitment_aggregated_signature: *mut [u8; 96],
     pub commitment_hash: *mut [u8; 32], // nullable
     pub llmq_type: LLMQType,

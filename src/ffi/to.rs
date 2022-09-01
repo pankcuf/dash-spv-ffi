@@ -153,7 +153,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
         let entry_hash = boxed(self.entry_hash.0);
         println!("MasternodeEntry.encode.entry_hash: {:?}", entry_hash);
         let operator_public_key = boxed(self.operator_public_key.0);
-        println!("MasternodeEntry.encode.entry_hash: {:?}", operator_public_key);
+        println!("MasternodeEntry.encode.operator_public_key: {:?}", operator_public_key);
         let previous_operator_public_keys = boxed_vec(self.previous_operator_public_keys
             .iter()
             .map(|(&Block {hash, height: block_height}, &key)|

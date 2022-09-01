@@ -61,11 +61,11 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     println!("unbox_llmq_entry.verification_vector_hash: {:?}", entry.verification_vector_hash);
     unbox_any(entry.verification_vector_hash);
     println!("unbox_llmq_entry.signers_bitset {:?}", entry.signers_bitset);
-    unbox_vec_ptr(entry.signers_bitset, entry.signers_bitset_length);
-    //unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length));
+    //unbox_vec_ptr(entry.signers_bitset, entry.signers_bitset_length);
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length));
     println!("unbox_llmq_entry.valid_members_bitset {:?}", entry.valid_members_bitset);
-    unbox_vec_ptr(entry.valid_members_bitset, entry.valid_members_bitset_length);
-    //unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length));
+    //unbox_vec_ptr(entry.valid_members_bitset, entry.valid_members_bitset_length);
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length));
 }
 
 pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
@@ -171,7 +171,11 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     println!("unbox_llmq_snapshot: {:?}", quorum_snapshot);
     let result = unbox_any(quorum_snapshot);
-    unbox_vec_ptr(result.member_list, result.member_list_length);
+    //unbox_vec_ptr(result.member_list, result.member_list_length);
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(result.member_list, result.member_list_length));
+    // TODO: AAA
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
+    //unbox_vec_ptr(result.skip_list, result.skip_list_length);
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     println!("unbox_tx_input: {:?}", result);
