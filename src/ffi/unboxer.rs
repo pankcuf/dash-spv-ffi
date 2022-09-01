@@ -46,35 +46,26 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     let entry = unbox_any(x);
     println!("unbox_llmq_entry.all_commitment_aggregated_signature: {:?}", entry.all_commitment_aggregated_signature);
     unbox_any(entry.all_commitment_aggregated_signature);
-    assert!(entry.all_commitment_aggregated_signature.is_null(), "entry.all_commitment_aggregated_signature not destroed");
     if !entry.commitment_hash.is_null() {
         println!("unbox_llmq_entry.commitment_hash: {:?}", entry.commitment_hash);
         unbox_any(entry.commitment_hash);
     }
-    assert!(entry.commitment_hash.is_null(), "entry.commitment_hash not destroed");
     println!("unbox_llmq_entry.entry_hash: {:?}", entry.entry_hash);
     unbox_any(entry.entry_hash);
-    assert!(entry.entry_hash.is_null(), "entry.entry_hash not destroed");
     println!("unbox_llmq_entry.llmq_hash: {:?}", entry.llmq_hash);
     unbox_any(entry.llmq_hash);
-    assert!(entry.llmq_hash.is_null(), "entry.llmq_hash not destroed");
     println!("unbox_llmq_entry.public_key: {:?}", entry.public_key);
     unbox_any(entry.public_key);
-    assert!(entry.public_key.is_null(), "entry.public_key not destroed");
     println!("unbox_llmq_entry.threshold_signature: {:?}", entry.threshold_signature);
     unbox_any(entry.threshold_signature);
-    assert!(entry.threshold_signature.is_null(), "entry.threshold_signature not destroed");
     println!("unbox_llmq_entry.verification_vector_hash: {:?}", entry.verification_vector_hash);
     unbox_any(entry.verification_vector_hash);
-    assert!(entry.verification_vector_hash.is_null(), "entry.verification_vector_hash not destroed");
     println!("unbox_llmq_entry.signers_bitset {:?}", entry.signers_bitset);
     //unbox_vec_ptr(entry.signers_bitset, entry.signers_bitset_length);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length));
-    assert!(entry.signers_bitset.is_null(), "entry.signers_bitset not destroed");
     println!("unbox_llmq_entry.valid_members_bitset {:?}", entry.valid_members_bitset);
     //unbox_vec_ptr(entry.valid_members_bitset, entry.valid_members_bitset_length);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length));
-    assert!(entry.valid_members_bitset.is_null(), "entry.valid_members_bitset not destroed");
 }
 
 pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
@@ -84,7 +75,6 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
     let values = unbox_vec_ptr(entry.values, entry.count);
     for &x in values.iter() {
         unbox_llmq_entry(x);
-        assert!(x.is_null(), "unbox_llmq_map.entry not destroed");
     }
 }
 pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
@@ -92,23 +82,18 @@ pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
     let masternode_list = unbox_any(list);
     println!("unbox_masternode_list.block_hash: {:?}", masternode_list.block_hash);
     unbox_any(masternode_list.block_hash);
-    assert!(masternode_list.block_hash.is_null(), "masternode_list.block_hash not destroed");
     if !masternode_list.masternode_merkle_root.is_null() {
         println!("unbox_masternode_list.masternode_merkle_root: {:?}", masternode_list.masternode_merkle_root);
         unbox_any(masternode_list.masternode_merkle_root);
     }
-    assert!(masternode_list.masternode_merkle_root.is_null(), "masternode_list.masternode_merkle_root not destroed");
     if !masternode_list.llmq_merkle_root.is_null() {
         println!("unbox_masternode_list.llmq_merkle_root: {:?}", masternode_list.llmq_merkle_root);
         unbox_any(masternode_list.llmq_merkle_root);
     }
-    assert!(masternode_list.llmq_merkle_root.is_null(), "masternode_list.llmq_merkle_root not destroed");
     println!("unbox_masternode_list.masternodes: {:?}", masternode_list.masternodes);
     unbox_masternode_vec(unbox_vec_ptr(masternode_list.masternodes, masternode_list.masternodes_count));
-    assert!(masternode_list.masternodes.is_null(), "masternode_list.masternodes not destroed");
     println!("unbox_masternode_list.llmq_type_maps: {:?}", masternode_list.llmq_type_maps);
     unbox_llmq_map_vec(unbox_vec_ptr(masternode_list.llmq_type_maps, masternode_list.llmq_type_maps_count));
-    assert!(masternode_list.llmq_type_maps.is_null(), "masternode_list.llmq_type_maps not destroed");
 }
 
 pub unsafe fn unbox_masternode_vec(vec: Vec<*mut types::MasternodeEntry>) {
