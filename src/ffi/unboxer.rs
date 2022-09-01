@@ -84,7 +84,7 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
     let values = unbox_vec_ptr(entry.values, entry.count);
     for &x in values.iter() {
         unbox_llmq_entry(x);
-        assert!(entry.x.is_null(), "unbox_llmq_map.entry not destroed");
+        assert!(x.is_null(), "unbox_llmq_map.entry not destroed");
     }
 }
 pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
@@ -92,17 +92,17 @@ pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
     let masternode_list = unbox_any(list);
     println!("unbox_masternode_list.block_hash: {:?}", masternode_list.block_hash);
     unbox_any(masternode_list.block_hash);
-    assert!(masternode_list.block_hash.x.is_null(), "masternode_list.block_hash not destroed");
+    assert!(masternode_list.block_hash.is_null(), "masternode_list.block_hash not destroed");
     if !masternode_list.masternode_merkle_root.is_null() {
         println!("unbox_masternode_list.masternode_merkle_root: {:?}", masternode_list.masternode_merkle_root);
         unbox_any(masternode_list.masternode_merkle_root);
     }
-    assert!(masternode_list.masternode_merkle_root.x.is_null(), "masternode_list.masternode_merkle_root not destroed");
+    assert!(masternode_list.masternode_merkle_root.is_null(), "masternode_list.masternode_merkle_root not destroed");
     if !masternode_list.llmq_merkle_root.is_null() {
         println!("unbox_masternode_list.llmq_merkle_root: {:?}", masternode_list.llmq_merkle_root);
         unbox_any(masternode_list.llmq_merkle_root);
     }
-    assert!(masternode_list.llmq_merkle_root.x.is_null(), "masternode_list.llmq_merkle_root not destroed");
+    assert!(masternode_list.llmq_merkle_root.is_null(), "masternode_list.llmq_merkle_root not destroed");
     println!("unbox_masternode_list.masternodes: {:?}", masternode_list.masternodes);
     unbox_masternode_vec(unbox_vec_ptr(masternode_list.masternodes, masternode_list.masternodes_count));
     assert!(masternode_list.masternodes.is_null(), "masternode_list.masternodes not destroed");
