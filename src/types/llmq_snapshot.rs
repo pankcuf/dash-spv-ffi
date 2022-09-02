@@ -3,10 +3,8 @@ use byte::{BytesExt, LE, TryRead};
 use dash_spv_models::common::llmq_snapshot_skip_mode::LLMQSnapshotSkipMode;
 use dash_spv_primitives::consensus::encode;
 use dash_spv_primitives::crypto::byte_util::BytesDecodable;
-use dash_spv_primitives::hashes::hex::ToHex;
 use dash_spv_primitives::impl_bytes_decodable;
 use crate::ffi::boxer::boxed_vec;
-use crate::ffi::unboxer::unbox_vec_ptr;
 
 #[repr(C)] #[derive(Clone, Copy)]
 pub struct LLMQSnapshot {
