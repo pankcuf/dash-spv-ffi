@@ -124,8 +124,11 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 }
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
+    println!("unbox_llmq_snapshot: {:?}", quorum_snapshot);
     let result = unbox_any(quorum_snapshot);
+    println!("unbox_llmq_snapshot.member_list: {:?}", result.member_list);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(result.member_list, result.member_list_length));
+    println!("unbox_llmq_snapshot.skip_list: {:?}", result.skip_list);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
@@ -184,16 +187,16 @@ pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     if !res.masternode_list.is_null() {
         unbox_masternode_list(res.masternode_list);
     }
-    if res.needed_masternode_lists_count > 0 {
+    if !res.needed_masternode_lists.is_null() {
         unbox_vec(unbox_vec_ptr(res.needed_masternode_lists, res.needed_masternode_lists_count));
     }
-    if res.added_masternodes_count > 0 {
+    if !res.added_masternodes.is_null() {
         unbox_masternode_vec(unbox_vec_ptr(res.added_masternodes, res.added_masternodes_count));
     }
-    if res.modified_masternodes_count > 0 {
+    if !res.modified_masternodes.is_null() {
         unbox_masternode_vec(unbox_vec_ptr(res.modified_masternodes, res.modified_masternodes_count));
     }
-    if res.added_llmq_type_maps_count > 0 {
+    if !res.added_llmq_type_maps.is_null() {
         unbox_llmq_map_vec(unbox_vec_ptr(res.added_llmq_type_maps, res.added_llmq_type_maps_count));
     }
 }
@@ -232,13 +235,13 @@ pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
             unbox_llmq_snapshot(res.snapshot_at_h_4c);
         }
     }
-    if res.last_quorum_per_index_count > 0 {
+    if !res.last_quorum_per_index.is_null() {
         unbox_llmq_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
     }
-    if res.quorum_snapshot_list_count > 0 {
+    if !res.quorum_snapshot_list.is_null() {
         unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
     }
-    if res.mn_list_diff_list_count > 0 {
+    if !res.mn_list_diff_list.is_null() {
         unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
     }
 }
