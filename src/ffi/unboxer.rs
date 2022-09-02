@@ -147,12 +147,6 @@ pub unsafe fn unbox_snapshot_vec(vec: Vec<*mut types::LLMQSnapshot>) {
     }
 }
 
-pub unsafe fn unbox_mn_list_diff_vec(vec: Vec<*mut types::MNListDiff>) {
-    for &x in vec.iter() {
-        unbox_mn_list_diff(x);
-    }
-}
-
 pub unsafe fn unbox_mn_list_diff_result_vec(vec: Vec<*mut types::MNListDiffResult>) {
     for &x in vec.iter() {
         unbox_mn_list_diff_result(x);
@@ -242,113 +236,91 @@ pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
 pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     println!("unbox_mn_list_diff_result: {:?}", result);
     let res = unbox_any(result);
-    if res.error_status > 0 {
-        return;
-    }
     println!("unbox_mn_list_diff_result.base_block_hash: {:?}", res.base_block_hash);
-    unbox_any(res.base_block_hash);
+    if !res.base_block_hash.is_null() {
+        unbox_any(res.base_block_hash);
+    }
     println!("unbox_mn_list_diff_result.block_hash: {:?}", res.block_hash);
-    unbox_any(res.block_hash);
+    if !res.block_hash.is_null() {
+        unbox_any(res.block_hash);
+    }
     println!("unbox_mn_list_diff_result.masternode_list: {:?}", res.masternode_list);
-    unbox_masternode_list(res.masternode_list);
+    if !res.masternode_list.is_null() {
+        unbox_masternode_list(res.masternode_list);
+    }
     println!("unbox_mn_list_diff_result.needed_masternode_lists: {:?}", res.needed_masternode_lists);
-    unbox_vec(unbox_vec_ptr(res.needed_masternode_lists, res.needed_masternode_lists_count));
+    if res.needed_masternode_lists_count > 0 {
+        unbox_vec(unbox_vec_ptr(res.needed_masternode_lists, res.needed_masternode_lists_count));
+    }
     println!("unbox_mn_list_diff_result.added_masternodes: {:?}", res.added_masternodes);
-    unbox_masternode_vec(unbox_vec_ptr(res.added_masternodes, res.added_masternodes_count));
+    if res.added_masternodes_count > 0 {
+        unbox_masternode_vec(unbox_vec_ptr(res.added_masternodes, res.added_masternodes_count));
+    }
     println!("unbox_mn_list_diff_result.modified_masternodes: {:?}", res.modified_masternodes);
-    unbox_masternode_vec(unbox_vec_ptr(res.modified_masternodes, res.modified_masternodes_count));
+    if res.modified_masternodes_count > 0 {
+        unbox_masternode_vec(unbox_vec_ptr(res.modified_masternodes, res.modified_masternodes_count));
+    }
     println!("unbox_mn_list_diff_result.added_llmq_type_maps: {:?}", res.added_llmq_type_maps);
-    unbox_llmq_map_vec(unbox_vec_ptr(res.added_llmq_type_maps, res.added_llmq_type_maps_count));
-}
-pub unsafe fn unbox_mn_list_diff(result: *mut types::MNListDiff) {
-    println!("unbox_mn_list_diff: {:?}", result);
-    let list_diff = unbox_any(result);
-    println!("unbox_mn_list_diff.base_block_hash: {:?}", list_diff.base_block_hash);
-    unbox_any(list_diff.base_block_hash);
-    println!("unbox_mn_list_diff.block_hash: {:?}", list_diff.block_hash);
-    unbox_any(list_diff.block_hash);
-    println!("unbox_mn_list_diff.merkle_hashes: {:?}", list_diff.merkle_hashes);
-    // TODO: ???? hashes become *mut *mut [u8; 32] so...
-    unbox_vec(unbox_vec_ptr(list_diff.merkle_hashes, list_diff.merkle_hashes_count));
-    //unbox_any(std::ptr::slice_from_raw_parts_mut(list_diff.merkle_hashes, list_diff.merkle_hashes_count) as *mut [u8]);
-    println!("unbox_mn_list_diff.merkle_flags: {:?}", list_diff.merkle_flags);
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(list_diff.merkle_flags, list_diff.merkle_flags_count));
-    println!("unbox_mn_list_diff.coinbase_transaction: {:?}", list_diff.coinbase_transaction);
-    unbox_coinbase_tx(list_diff.coinbase_transaction);
-    println!("unbox_mn_list_diff.deleted_masternode_hashes: {:?}", list_diff.deleted_masternode_hashes);
-    unbox_vec(unbox_vec_ptr(list_diff.deleted_masternode_hashes, list_diff.deleted_masternode_hashes_count));
-    println!("unbox_mn_list_diff.added_or_modified_masternodes: {:?}", list_diff.added_or_modified_masternodes);
-    unbox_masternode_vec(unbox_vec_ptr(list_diff.added_or_modified_masternodes, list_diff.added_or_modified_masternodes_count));
-    println!("unbox_mn_list_diff.deleted_quorums: {:?}", list_diff.deleted_quorums);
-    unbox_llmq_hash_vec(unbox_vec_ptr(list_diff.deleted_quorums, list_diff.deleted_quorums_count));
-    println!("unbox_mn_list_diff.added_quorums: {:?}", list_diff.added_quorums);
-    unbox_llmq_vec(unbox_vec_ptr(list_diff.added_quorums, list_diff.added_quorums_count));
+    if res.added_llmq_type_maps_count > 0 {
+        unbox_llmq_map_vec(unbox_vec_ptr(res.added_llmq_type_maps, res.added_llmq_type_maps_count));
+    }
 }
 
-pub unsafe fn unbox_qr_info(result: *mut types::QRInfo) {
-    println!("unbox_qr_info: {:?}", result);
-    let res = unbox_any(result);
-    println!("unbox_qr_info.snapshot_at_h_c: {:?}", res.snapshot_at_h_c);
-    unbox_llmq_snapshot(res.snapshot_at_h_c);
-    println!("unbox_qr_info.snapshot_at_h_2c: {:?}", res.snapshot_at_h_2c);
-    unbox_llmq_snapshot(res.snapshot_at_h_2c);
-    println!("unbox_qr_info.snapshot_at_h_3c: {:?}", res.snapshot_at_h_3c);
-    unbox_llmq_snapshot(res.snapshot_at_h_3c);
-    println!("unbox_qr_info.mn_list_diff_tip: {:?}", res.mn_list_diff_tip);
-    unbox_mn_list_diff(res.mn_list_diff_tip);
-    println!("unbox_qr_info.mn_list_diff_at_h: {:?}", res.mn_list_diff_at_h);
-    unbox_mn_list_diff(res.mn_list_diff_at_h);
-    println!("unbox_qr_info.mn_list_diff_at_h_c: {:?}", res.mn_list_diff_at_h_c);
-    unbox_mn_list_diff(res.mn_list_diff_at_h_c);
-    println!("unbox_qr_info.mn_list_diff_at_h_2c: {:?}", res.mn_list_diff_at_h_2c);
-    unbox_mn_list_diff(res.mn_list_diff_at_h_2c);
-    println!("unbox_qr_info.mn_list_diff_at_h_3c: {:?}", res.mn_list_diff_at_h_3c);
-    unbox_mn_list_diff(res.mn_list_diff_at_h_3c);
-    if res.extra_share {
-        println!("unbox_qr_info.snapshot_at_h_4c: {:?}", res.snapshot_at_h_4c);
-        unbox_llmq_snapshot(res.snapshot_at_h_4c);
-        println!("unbox_qr_info.mn_list_diff_at_h_4c: {:?}", res.mn_list_diff_at_h_4c);
-        unbox_mn_list_diff(res.mn_list_diff_at_h_4c);
-    }
-    println!("unbox_qr_info.last_quorum_per_index: {:?}", res.last_quorum_per_index);
-    unbox_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
-    println!("unbox_qr_info.quorum_snapshot_list: {:?}", res.quorum_snapshot_list);
-    unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
-    println!("unbox_qr_info.mn_list_diff_list: {:?}", res.mn_list_diff_list);
-    unbox_mn_list_diff_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
-}
 pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     println!("unbox_qr_info_result: {:?}", result);
     let res = unbox_any(result);
-    if res.error_status > 0 {
-        return;
-    }
     println!("unbox_qr_info_result.result_at_tip: {:?}", res.result_at_tip);
-    unbox_mn_list_diff_result(res.result_at_tip);
+    if !res.result_at_tip.is_null() {
+        unbox_mn_list_diff_result(res.result_at_tip);
+    }
     println!("unbox_qr_info_result.result_at_h: {:?}", res.result_at_h);
-    unbox_mn_list_diff_result(res.result_at_h);
+    if !res.result_at_h.is_null() {
+        unbox_mn_list_diff_result(res.result_at_h);
+    }
     println!("unbox_qr_info_result.result_at_h_c: {:?}", res.result_at_h_c);
-    unbox_mn_list_diff_result(res.result_at_h_c);
+    if !res.result_at_h_c.is_null() {
+        unbox_mn_list_diff_result(res.result_at_h_c);
+    }
     println!("unbox_qr_info_result.result_at_h_2c: {:?}", res.result_at_h_2c);
-    unbox_mn_list_diff_result(res.result_at_h_2c);
+    if !res.result_at_h_2c.is_null() {
+        unbox_mn_list_diff_result(res.result_at_h_2c);
+    }
     println!("unbox_qr_info_result.result_at_h_3c: {:?}", res.result_at_h_3c);
-    unbox_mn_list_diff_result(res.result_at_h_3c);
+    if !res.result_at_h_3c.is_null() {
+        unbox_mn_list_diff_result(res.result_at_h_3c);
+    }
     println!("unbox_qr_info_result.snapshot_at_h_c: {:?}", res.snapshot_at_h_c);
-    unbox_llmq_snapshot(res.snapshot_at_h_c);
+    if !res.snapshot_at_h_c.is_null() {
+        unbox_llmq_snapshot(res.snapshot_at_h_c);
+    }
     println!("unbox_qr_info_result.snapshot_at_h_2c: {:?}", res.snapshot_at_h_2c);
-    unbox_llmq_snapshot(res.snapshot_at_h_2c);
+    if !res.snapshot_at_h_2c.is_null() {
+        unbox_llmq_snapshot(res.snapshot_at_h_2c);
+    }
     println!("unbox_qr_info_result.snapshot_at_h_3c: {:?}", res.snapshot_at_h_3c);
-    unbox_llmq_snapshot(res.snapshot_at_h_3c);
+    if !res.snapshot_at_h_3c.is_null() {
+        unbox_llmq_snapshot(res.snapshot_at_h_3c);
+    }
     if res.extra_share {
         println!("unbox_qr_info_result.result_at_h_4c: {:?}", res.result_at_h_4c);
-        unbox_mn_list_diff_result(res.result_at_h_4c);
+        if !res.result_at_h_4c.is_null() {
+            unbox_mn_list_diff_result(res.result_at_h_4c);
+        }
         println!("unbox_qr_info_result.snapshot_at_h_4c: {:?}", res.snapshot_at_h_4c);
-        unbox_llmq_snapshot(res.snapshot_at_h_4c);
+        if !res.snapshot_at_h_4c.is_null() {
+            unbox_llmq_snapshot(res.snapshot_at_h_4c);
+        }
     }
     println!("unbox_qr_info_result.last_quorum_per_index: {:?}", res.last_quorum_per_index);
-    unbox_llmq_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
+    if res.last_quorum_per_index_count > 0 {
+        unbox_llmq_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
+    }
     println!("unbox_qr_info_result.quorum_snapshot_list: {:?}", res.quorum_snapshot_list);
-    unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
+    if res.quorum_snapshot_list_count > 0 {
+        unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
+    }
     println!("unbox_qr_info_result.mn_list_diff_list: {:?}", res.mn_list_diff_list);
-    unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
+    if res.mn_list_diff_list_count > 0 {
+        unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
+    }
 }
