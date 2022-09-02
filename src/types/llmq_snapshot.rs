@@ -21,8 +21,8 @@ pub struct LLMQSnapshot {
 impl std::fmt::Debug for LLMQSnapshot {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("LLMQSnapshot")
-            .field("member_list", &unsafe { unbox_vec_ptr(self.member_list, self.member_list_length).to_hex() })
-            .field("skip_list", &unsafe { unbox_vec_ptr(self.skip_list, self.skip_list_length) })
+            .field("member_list", &self.member_list)
+            .field("skip_list", &self.skip_list)
             .field("skip_list_mode", &self.skip_list_mode)
             .finish()
     }
