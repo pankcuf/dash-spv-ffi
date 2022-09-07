@@ -124,11 +124,8 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 }
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
-    println!("unbox_llmq_snapshot: {:?}", quorum_snapshot);
     let result = unbox_any(quorum_snapshot);
-    println!("unbox_llmq_snapshot.member_list: {:?}", result.member_list);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(result.member_list, result.member_list_length));
-    println!("unbox_llmq_snapshot.skip_list: {:?}", result.skip_list);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
