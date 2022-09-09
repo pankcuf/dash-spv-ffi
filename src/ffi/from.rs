@@ -132,7 +132,6 @@ impl<'a> FromFFI<'a> for types::MasternodeList {
                             .fold(BTreeMap::new(), |mut acc, j| {
                                 let raw_value = *(*(llmq_map.values.offset(j as isize)));
                                 let value = raw_value.decode();
-                                println!("reconstruct_quorum. validate_bitsets: {}", value.validate_bitsets());
                                 let key = value.llmq_hash.clone();
                                 acc.insert(key, value);
                                 acc
