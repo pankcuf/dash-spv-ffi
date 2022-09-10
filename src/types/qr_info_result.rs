@@ -1,7 +1,8 @@
-use std::ptr::null_mut;
 use crate::types;
+use std::ptr::null_mut;
 
-#[repr(C)] #[derive(Clone, Copy, Debug)]
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 pub struct QRInfoResult {
     pub error_status: u8,
     pub result_at_tip: *mut types::MNListDiffResult,
@@ -56,4 +57,3 @@ impl QRInfoResult {
         result
     }
 }
-

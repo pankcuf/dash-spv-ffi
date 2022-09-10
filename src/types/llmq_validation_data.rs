@@ -1,4 +1,5 @@
-#[repr(C)] #[derive(Clone, Copy, Debug)]
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 pub struct LLMQValidationData {
     pub items: *mut *mut [u8; 48],
     pub count: usize,

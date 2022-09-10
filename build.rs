@@ -4,7 +4,8 @@ use std::env;
 
 fn main() {
     let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
-    let mut config: cbindgen::Config = cbindgen::Config::from_file("./cbindgen.toml").expect("Error config");
+    let mut config: cbindgen::Config =
+        cbindgen::Config::from_file("./cbindgen.toml").expect("Error config");
     let mut parse_config: cbindgen::ParseConfig = cbindgen::ParseConfig::default();
     parse_config.parse_deps = true;
     parse_config.include = Some(vec!["dash-spv-models".to_string()]);

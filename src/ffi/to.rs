@@ -1,14 +1,14 @@
-use std::collections::BTreeMap;
-use std::ptr::null_mut;
+use crate::ffi::boxer::{boxed, boxed_vec};
+use crate::ffi::from::FromFFI;
+use crate::types;
 use dash_spv_models::common;
 use dash_spv_models::common::{Block, LLMQType};
 use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::tx::{coinbase_transaction, transaction};
 use dash_spv_primitives::crypto::byte_util::UInt256;
-use crate::ffi::boxer::{boxed, boxed_vec};
-use crate::ffi::from::FromFFI;
-use crate::types;
+use std::collections::BTreeMap;
+use std::ptr::null_mut;
 
 pub trait ToFFI<'a> {
     type Item: FromFFI<'a>;
@@ -20,11 +20,11 @@ impl<'a> ToFFI<'a> for transaction::TransactionInput {
     fn encode(&self) -> Self::Item {
         let (script, script_length) = match &self.script {
             Some(data) => (boxed_vec(data.clone()), data.len()),
-            None => (null_mut(), 0)
+            None => (null_mut(), 0),
         };
         let (signature, signature_length) = match &self.signature {
             Some(data) => (boxed_vec(data.clone()), data.len()),
-            None => (null_mut(), 0)
+            None => (null_mut(), 0),
         };
         Self::Item {
             input_hash: boxed(self.input_hash.0),
@@ -33,7 +33,7 @@ impl<'a> ToFFI<'a> for transaction::TransactionInput {
             script_length,
             signature,
             signature_length,
-            sequence: self.sequence
+            sequence: self.sequence,
         }
     }
 }
@@ -44,18 +44,18 @@ impl<'a> ToFFI<'a> for transaction::TransactionOutput {
     fn encode(&self) -> Self::Item {
         let (script, script_length) = match &self.script {
             Some(data) => (boxed_vec(data.clone()), data.len()),
-            None => (null_mut(), 0)
+            None => (null_mut(), 0),
         };
         let (address, address_length) = match &self.address {
             Some(data) => (boxed_vec(data.clone()), data.len()),
-            None => (null_mut(), 0)
+            None => (null_mut(), 0),
         };
         Self::Item {
             amount: self.amount,
             script,
             script_length,
             address,
-            address_length
+            address_length,
         }
     }
 }
@@ -65,15 +65,19 @@ impl<'a> ToFFI<'a> for transaction::Transaction {
 
     fn encode(&self) -> Self::Item {
         Self::Item {
-            inputs: boxed_vec(self.inputs
-                .iter()
-                .map(|input| boxed(input.encode()))
-                .collect()),
+            inputs: boxed_vec(
+                self.inputs
+                    .iter()
+                    .map(|input| boxed(input.encode()))
+                    .collect(),
+            ),
             inputs_count: self.inputs.len(),
-            outputs: boxed_vec(self.outputs
-                .iter()
-                .map(|output| boxed(output.encode()))
-                .collect()),
+            outputs: boxed_vec(
+                self.outputs
+                    .iter()
+                    .map(|output| boxed(output.encode()))
+                    .collect(),
+            ),
             outputs_count: self.outputs.len(),
             lock_time: self.lock_time,
             version: self.version,
@@ -84,7 +88,7 @@ impl<'a> ToFFI<'a> for transaction::Transaction {
             },
             tx_type: self.tx_type,
             payload_offset: self.payload_offset,
-            block_height: self.block_height
+            block_height: self.block_height,
         }
     }
 }
@@ -101,7 +105,7 @@ impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction {
                 null_mut()
             } else {
                 boxed(self.merkle_root_llmq_list.unwrap().0)
-            }
+            },
         }
     }
 }
@@ -126,7 +130,7 @@ impl<'a> ToFFI<'a> for masternode_list::MasternodeList {
             masternodes: encode_masternodes_map(&self.masternodes),
             masternodes_count: self.masternodes.len(),
             llmq_type_maps: encode_quorums_map(&self.quorums),
-            llmq_type_maps_count: self.quorums.len()
+            llmq_type_maps_count: self.quorums.len(),
         }
     }
 }
@@ -139,31 +143,78 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
         let previous_entry_hashes_count = self.previous_entry_hashes.len();
         let previous_validity_count = self.previous_validity.len();
         let confirmed_hash = boxed(self.confirmed_hash.0);
-        let confirmed_hash_hashed_with_provider_registration_transaction_hash = if self.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_none() {
+        let confirmed_hash_hashed_with_provider_registration_transaction_hash = if self
+            .confirmed_hash_hashed_with_provider_registration_transaction_hash
+            .is_none()
+        {
             null_mut()
         } else {
-            boxed(self.confirmed_hash_hashed_with_provider_registration_transaction_hash.unwrap().0)
+            boxed(
+                self.confirmed_hash_hashed_with_provider_registration_transaction_hash
+                    .unwrap()
+                    .0,
+            )
         };
         let key_id_voting = boxed(self.key_id_voting.0);
         let known_confirmed_at_height = self.known_confirmed_at_height.unwrap_or(0);
         let entry_hash = boxed(self.entry_hash.0);
         let operator_public_key = boxed(self.operator_public_key.0);
-        let previous_operator_public_keys = boxed_vec(self.previous_operator_public_keys
-            .iter()
-            .map(|(&Block {hash, height: block_height}, &key)|
-                types::OperatorPublicKey { block_hash: hash.0, block_height, key: key.0 })
-            .collect());
-        let previous_entry_hashes = boxed_vec(self.previous_entry_hashes
-            .iter()
-            .map(|(&Block { hash: block_hash, height: block_height}, &hash)|
-                types::MasternodeEntryHash { block_hash: block_hash.0, block_height, hash: hash.0 })
-            .collect());
-        let previous_validity = boxed_vec(self.previous_validity
-            .iter()
-            .map(|(&Block { hash, height: block_height}, &is_valid)|
-                types::Validity { block_hash: hash.0, block_height, is_valid })
-            .collect());
-        let provider_registration_transaction_hash = boxed(self.provider_registration_transaction_hash.0);
+        let previous_operator_public_keys = boxed_vec(
+            self.previous_operator_public_keys
+                .iter()
+                .map(
+                    |(
+                        &Block {
+                            hash,
+                            height: block_height,
+                        },
+                        &key,
+                    )| types::OperatorPublicKey {
+                        block_hash: hash.0,
+                        block_height,
+                        key: key.0,
+                    },
+                )
+                .collect(),
+        );
+        let previous_entry_hashes = boxed_vec(
+            self.previous_entry_hashes
+                .iter()
+                .map(
+                    |(
+                        &Block {
+                            hash: block_hash,
+                            height: block_height,
+                        },
+                        &hash,
+                    )| types::MasternodeEntryHash {
+                        block_hash: block_hash.0,
+                        block_height,
+                        hash: hash.0,
+                    },
+                )
+                .collect(),
+        );
+        let previous_validity = boxed_vec(
+            self.previous_validity
+                .iter()
+                .map(
+                    |(
+                        &Block {
+                            hash,
+                            height: block_height,
+                        },
+                        &is_valid,
+                    )| types::Validity {
+                        block_hash: hash.0,
+                        block_height,
+                        is_valid,
+                    },
+                )
+                .collect(),
+        );
+        let provider_registration_transaction_hash =
+            boxed(self.provider_registration_transaction_hash.0);
         let ip_address = boxed(self.socket_address.ip_address.0);
         let port = self.socket_address.port;
         let is_valid = self.is_valid;
@@ -185,7 +236,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
             provider_registration_transaction_hash,
             ip_address,
             port,
-            update_height
+            update_height,
         }
     }
 }
@@ -244,48 +295,57 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
 
     fn encode(&self) -> Self::Item {
         let deleted_masternode_hashes_count = self.deleted_masternode_hashes.len();
-        let deleted_quorums_vec = self.deleted_quorums
-            .clone()
-            .into_iter()
-            .fold(Vec::new(), |mut acc, (llmq_type, hashes)| {
-                hashes
-                    .iter()
-                    .for_each(|&hash| acc.push(boxed(types::LLMQTypedHash { llmq_hash: boxed(hash.0), llmq_type: llmq_type.into() })));
+        let deleted_quorums_vec = self.deleted_quorums.clone().into_iter().fold(
+            Vec::new(),
+            |mut acc, (llmq_type, hashes)| {
+                hashes.iter().for_each(|&hash| {
+                    acc.push(boxed(types::LLMQTypedHash {
+                        llmq_hash: boxed(hash.0),
+                        llmq_type: llmq_type.into(),
+                    }))
+                });
                 acc
-            });
-        let added_quorums_vec = self.added_quorums
-            .clone()
-            .into_iter()
-            .fold(Vec::new(), |mut acc, (_, map)| {
-                map
-                    .iter()
-                    .for_each(|(_, entry)| acc.push(boxed(entry.encode())));
-                acc
-            });
+            },
+        );
+        let added_quorums_vec =
+            self.added_quorums
+                .clone()
+                .into_iter()
+                .fold(Vec::new(), |mut acc, (_, map)| {
+                    map.iter()
+                        .for_each(|(_, entry)| acc.push(boxed(entry.encode())));
+                    acc
+                });
         Self::Item {
             base_block_hash: boxed(self.base_block_hash.0),
             block_hash: boxed(self.block_hash.0),
             total_transactions: self.total_transactions,
-            merkle_hashes: boxed_vec((0..self.merkle_hashes.1.len())
-                .into_iter()
-                .map(|i| boxed(self.merkle_hashes.1[i].0))
-                .collect()),
+            merkle_hashes: boxed_vec(
+                (0..self.merkle_hashes.1.len())
+                    .into_iter()
+                    .map(|i| boxed(self.merkle_hashes.1[i].0))
+                    .collect(),
+            ),
             merkle_hashes_count: self.merkle_hashes.1.len(),
             merkle_flags: boxed_vec(self.merkle_flags.to_vec()),
             merkle_flags_count: self.merkle_flags.len(),
             coinbase_transaction: boxed(self.coinbase_transaction.encode()),
             deleted_masternode_hashes_count,
-            deleted_masternode_hashes: boxed_vec((0..deleted_masternode_hashes_count)
-                .into_iter()
-                .map(|i| boxed(self.deleted_masternode_hashes[i].0))
-                .collect()),
+            deleted_masternode_hashes: boxed_vec(
+                (0..deleted_masternode_hashes_count)
+                    .into_iter()
+                    .map(|i| boxed(self.deleted_masternode_hashes[i].0))
+                    .collect(),
+            ),
             added_or_modified_masternodes_count: self.added_or_modified_masternodes.len(),
-            added_or_modified_masternodes: encode_masternodes_map(&self.added_or_modified_masternodes),
+            added_or_modified_masternodes: encode_masternodes_map(
+                &self.added_or_modified_masternodes,
+            ),
             deleted_quorums_count: deleted_quorums_vec.len(),
             deleted_quorums: boxed_vec(deleted_quorums_vec),
             added_quorums_count: added_quorums_vec.len(),
             added_quorums: boxed_vec(added_quorums_vec),
-            block_height: self.block_height
+            block_height: self.block_height,
         }
     }
 }
@@ -298,7 +358,7 @@ impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
             member_list: boxed_vec(self.member_list.clone()),
             skip_list_length: self.skip_list.len(),
             skip_list: boxed_vec(self.skip_list.to_vec()),
-            skip_list_mode: self.skip_list_mode
+            skip_list_mode: self.skip_list_mode,
         }
     }
 }
@@ -317,8 +377,10 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
         let mn_list_diff_at_h_3c = boxed(self.mn_list_diff_at_h_3c.encode());
         let extra_share = self.extra_share;
         let (snapshot_at_h_4c, mn_list_diff_at_h_4c) = if extra_share {
-            (boxed(self.snapshot_at_h_4c.as_ref().unwrap().encode()),
-             boxed(self.mn_list_diff_at_h_4c.as_ref().unwrap().encode()))
+            (
+                boxed(self.snapshot_at_h_4c.as_ref().unwrap().encode()),
+                boxed(self.mn_list_diff_at_h_4c.as_ref().unwrap().encode()),
+            )
         } else {
             (null_mut(), null_mut())
         };
@@ -327,19 +389,22 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
             (0..last_quorum_per_index_count)
                 .into_iter()
                 .map(|i| boxed(self.last_quorum_per_index[i].encode()))
-                .collect());
+                .collect(),
+        );
         let quorum_snapshot_list_count = self.quorum_snapshot_list.len();
         let quorum_snapshot_list = boxed_vec(
             (0..quorum_snapshot_list_count)
                 .into_iter()
                 .map(|i| boxed(self.quorum_snapshot_list[i].encode()))
-                .collect());
+                .collect(),
+        );
         let mn_list_diff_list_count = self.mn_list_diff_list.len();
         let mn_list_diff_list = boxed_vec(
             (0..mn_list_diff_list_count)
                 .into_iter()
                 .map(|i| boxed(self.mn_list_diff_list[i].encode()))
-                .collect());
+                .collect(),
+        );
         Self::Item {
             snapshot_at_h_c,
             snapshot_at_h_2c,
@@ -357,7 +422,7 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
             quorum_snapshot_list_count,
             quorum_snapshot_list,
             mn_list_diff_list_count,
-            mn_list_diff_list
+            mn_list_diff_list,
         }
     }
 }
@@ -373,24 +438,35 @@ impl<'a> ToFFI<'a> for common::Block {
     }
 }
 
-pub fn encode_quorums_map(quorums: &BTreeMap<LLMQType, BTreeMap<UInt256, llmq_entry::LLMQEntry>>) -> *mut *mut types::LLMQMap {
-    boxed_vec(quorums
-        .iter()
-        .map(|(&llmq_type, map)|
-            boxed(types::LLMQMap {
-                llmq_type: llmq_type.into(),
-                values: boxed_vec((*map)
-                    .iter()
-                    .map(|(_, entry)| boxed(entry.encode()))
-                    .collect()),
-                count: (*map).len()
-            }))
-        .collect())
+pub fn encode_quorums_map(
+    quorums: &BTreeMap<LLMQType, BTreeMap<UInt256, llmq_entry::LLMQEntry>>,
+) -> *mut *mut types::LLMQMap {
+    boxed_vec(
+        quorums
+            .iter()
+            .map(|(&llmq_type, map)| {
+                boxed(types::LLMQMap {
+                    llmq_type: llmq_type.into(),
+                    values: boxed_vec(
+                        (*map)
+                            .iter()
+                            .map(|(_, entry)| boxed(entry.encode()))
+                            .collect(),
+                    ),
+                    count: (*map).len(),
+                })
+            })
+            .collect(),
+    )
 }
 
-pub fn encode_masternodes_map(masternodes: &BTreeMap<UInt256, masternode_entry::MasternodeEntry>) -> *mut *mut types::MasternodeEntry {
-    boxed_vec(masternodes
-        .iter()
-        .map(|(_, entry)| boxed((*entry).encode()))
-        .collect())
+pub fn encode_masternodes_map(
+    masternodes: &BTreeMap<UInt256, masternode_entry::MasternodeEntry>,
+) -> *mut *mut types::MasternodeEntry {
+    boxed_vec(
+        masternodes
+            .iter()
+            .map(|(_, entry)| boxed((*entry).encode()))
+            .collect(),
+    )
 }

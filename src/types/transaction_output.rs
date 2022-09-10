@@ -1,10 +1,11 @@
-use std::ptr::null_mut;
-use byte::ctx::Endian;
-use byte::{BytesExt, LE, TryRead};
-use dash_spv_primitives::crypto::VarBytes;
 use crate::ffi::boxer::boxed_vec;
+use byte::ctx::Endian;
+use byte::{BytesExt, TryRead, LE};
+use dash_spv_primitives::crypto::VarBytes;
+use std::ptr::null_mut;
 
-#[repr(C)] #[derive(Clone, Copy, Debug)]
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 pub struct TransactionOutput {
     pub amount: u64,
     pub script: *mut u8,
@@ -17,12 +18,15 @@ impl<'a> TryRead<'a, Endian> for TransactionOutput {
         let offset = &mut 0;
         let amount = bytes.read_with::<u64>(offset, LE)?;
         let script = bytes.read_with::<VarBytes>(offset, LE)?;
-        Ok((Self {
-            amount,
-            script: boxed_vec(script.1.to_vec()),
-            script_length: script.1.len(),
-            address: null_mut(),
-            address_length: 0
-        }, *offset))
+        Ok((
+            Self {
+                amount,
+                script: boxed_vec(script.1.to_vec()),
+                script_length: script.1.len(),
+                address: null_mut(),
+                address_length: 0,
+            },
+            *offset,
+        ))
     }
 }

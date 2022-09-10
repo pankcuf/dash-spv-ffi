@@ -17,14 +17,23 @@ pub unsafe fn unbox_vec_ptr<T>(ptr: *mut T, count: usize) -> Vec<T> {
 pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
     let entry = unbox_any(x);
     unbox_any(entry.confirmed_hash);
-    if !entry.confirmed_hash_hashed_with_provider_registration_transaction_hash.is_null() {
+    if !entry
+        .confirmed_hash_hashed_with_provider_registration_transaction_hash
+        .is_null()
+    {
         unbox_any(entry.confirmed_hash_hashed_with_provider_registration_transaction_hash);
     }
     unbox_any(entry.key_id_voting);
     unbox_any(entry.entry_hash);
     unbox_any(entry.operator_public_key);
-    unbox_vec_ptr(entry.previous_entry_hashes, entry.previous_entry_hashes_count);
-    unbox_vec_ptr(entry.previous_operator_public_keys, entry.previous_operator_public_keys_count);
+    unbox_vec_ptr(
+        entry.previous_entry_hashes,
+        entry.previous_entry_hashes_count,
+    );
+    unbox_vec_ptr(
+        entry.previous_operator_public_keys,
+        entry.previous_operator_public_keys_count,
+    );
     unbox_vec_ptr(entry.previous_validity, entry.previous_validity_count);
     unbox_any(entry.provider_registration_transaction_hash);
     unbox_any(entry.ip_address);
@@ -41,8 +50,14 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     unbox_any(entry.public_key);
     unbox_any(entry.threshold_signature);
     unbox_any(entry.verification_vector_hash);
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.signers_bitset, entry.signers_bitset_length));
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(entry.valid_members_bitset, entry.valid_members_bitset_length));
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(
+        entry.signers_bitset,
+        entry.signers_bitset_length,
+    ));
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(
+        entry.valid_members_bitset,
+        entry.valid_members_bitset_length,
+    ));
 }
 
 pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
@@ -61,8 +76,14 @@ pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
     if !masternode_list.llmq_merkle_root.is_null() {
         unbox_any(masternode_list.llmq_merkle_root);
     }
-    unbox_masternode_vec(unbox_vec_ptr(masternode_list.masternodes, masternode_list.masternodes_count));
-    unbox_llmq_map_vec(unbox_vec_ptr(masternode_list.llmq_type_maps, masternode_list.llmq_type_maps_count));
+    unbox_masternode_vec(unbox_vec_ptr(
+        masternode_list.masternodes,
+        masternode_list.masternodes_count,
+    ));
+    unbox_llmq_map_vec(unbox_vec_ptr(
+        masternode_list.llmq_type_maps,
+        masternode_list.llmq_type_maps_count,
+    ));
 }
 
 pub unsafe fn unbox_masternode_vec(vec: Vec<*mut types::MasternodeEntry>) {
@@ -125,26 +146,42 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     let result = unbox_any(quorum_snapshot);
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(result.member_list, result.member_list_length));
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(result.skip_list, result.skip_list_length));
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(
+        result.member_list,
+        result.member_list_length,
+    ));
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(
+        result.skip_list,
+        result.skip_list_length,
+    ));
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     let input = unbox_any(result);
     unbox_any(input.input_hash);
     if !input.script.is_null() && input.script_length > 0 {
-        unbox_any(std::ptr::slice_from_raw_parts_mut(input.script, input.script_length) as *mut [u8]);
+        unbox_any(
+            std::ptr::slice_from_raw_parts_mut(input.script, input.script_length) as *mut [u8],
+        );
     }
     if !input.signature.is_null() && input.signature_length > 0 {
-        unbox_any(std::ptr::slice_from_raw_parts_mut(input.signature, input.signature_length) as *mut [u8]);
+        unbox_any(
+            std::ptr::slice_from_raw_parts_mut(input.signature, input.signature_length)
+                as *mut [u8],
+        );
     }
 }
 pub unsafe fn unbox_tx_output(result: *mut types::TransactionOutput) {
     let output = unbox_any(result);
     if !output.script.is_null() && output.script_length > 0 {
-        unbox_any(std::ptr::slice_from_raw_parts_mut(output.script, output.script_length) as *mut [u8]);
+        unbox_any(
+            std::ptr::slice_from_raw_parts_mut(output.script, output.script_length) as *mut [u8],
+        );
     }
     if !output.address.is_null() && output.address_length > 0 {
-        unbox_any(std::ptr::slice_from_raw_parts_mut(output.address, output.address_length) as *mut [u8]);
+        unbox_any(
+            std::ptr::slice_from_raw_parts_mut(output.address, output.address_length)
+                as *mut [u8],
+        );
     }
 }
 pub unsafe fn unbox_tx_input_vec(result: Vec<*mut types::TransactionInput>) {
@@ -185,16 +222,28 @@ pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
         unbox_masternode_list(res.masternode_list);
     }
     if !res.needed_masternode_lists.is_null() {
-        unbox_vec(unbox_vec_ptr(res.needed_masternode_lists, res.needed_masternode_lists_count));
+        unbox_vec(unbox_vec_ptr(
+            res.needed_masternode_lists,
+            res.needed_masternode_lists_count,
+        ));
     }
     if !res.added_masternodes.is_null() {
-        unbox_masternode_vec(unbox_vec_ptr(res.added_masternodes, res.added_masternodes_count));
+        unbox_masternode_vec(unbox_vec_ptr(
+            res.added_masternodes,
+            res.added_masternodes_count,
+        ));
     }
     if !res.modified_masternodes.is_null() {
-        unbox_masternode_vec(unbox_vec_ptr(res.modified_masternodes, res.modified_masternodes_count));
+        unbox_masternode_vec(unbox_vec_ptr(
+            res.modified_masternodes,
+            res.modified_masternodes_count,
+        ));
     }
     if !res.added_llmq_type_maps.is_null() {
-        unbox_llmq_map_vec(unbox_vec_ptr(res.added_llmq_type_maps, res.added_llmq_type_maps_count));
+        unbox_llmq_map_vec(unbox_vec_ptr(
+            res.added_llmq_type_maps,
+            res.added_llmq_type_maps_count,
+        ));
     }
 }
 
@@ -233,12 +282,21 @@ pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
         }
     }
     if !res.last_quorum_per_index.is_null() {
-        unbox_llmq_vec(unbox_vec_ptr(res.last_quorum_per_index, res.last_quorum_per_index_count));
+        unbox_llmq_vec(unbox_vec_ptr(
+            res.last_quorum_per_index,
+            res.last_quorum_per_index_count,
+        ));
     }
     if !res.quorum_snapshot_list.is_null() {
-        unbox_snapshot_vec(unbox_vec_ptr(res.quorum_snapshot_list, res.quorum_snapshot_list_count));
+        unbox_snapshot_vec(unbox_vec_ptr(
+            res.quorum_snapshot_list,
+            res.quorum_snapshot_list_count,
+        ));
     }
     if !res.mn_list_diff_list.is_null() {
-        unbox_mn_list_diff_result_vec(unbox_vec_ptr(res.mn_list_diff_list, res.mn_list_diff_list_count));
+        unbox_mn_list_diff_result_vec(unbox_vec_ptr(
+            res.mn_list_diff_list,
+            res.mn_list_diff_list_count,
+        ));
     }
 }
