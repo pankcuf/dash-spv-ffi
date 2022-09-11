@@ -13,7 +13,7 @@ pub struct LLMQSnapshot {
     pub member_list: *mut u8,
     // Skip list at height n
     pub skip_list_length: usize,
-    pub skip_list: *mut u32,
+    pub skip_list: *mut i32,
     //  Mode of the skip list
     pub skip_list_mode: LLMQSnapshotSkipMode,
 }
@@ -39,7 +39,7 @@ impl<'a> TryRead<'a, Endian> for LLMQSnapshot {
         let skip_list_length = bytes.read_with::<encode::VarInt>(offset, LE)?.0 as usize;
         let mut skip_list_vec = Vec::with_capacity(skip_list_length);
         for _i in 0..skip_list_length {
-            skip_list_vec.push(bytes.read_with::<u32>(offset, LE)?);
+            skip_list_vec.push(bytes.read_with::<i32>(offset, LE)?);
         }
         Ok((
             Self {
@@ -57,7 +57,7 @@ impl<'a> TryRead<'a, Endian> for LLMQSnapshot {
 impl LLMQSnapshot {
     pub fn from_data(
         member_list: Vec<u8>,
-        skip_list: Vec<u32>,
+        skip_list: Vec<i32>,
         skip_list_mode: LLMQSnapshotSkipMode,
     ) -> Self {
         Self {

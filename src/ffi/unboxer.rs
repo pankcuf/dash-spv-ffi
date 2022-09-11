@@ -150,7 +150,7 @@ pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
         result.member_list,
         result.member_list_length,
     ));
-    unbox_any(std::ptr::slice_from_raw_parts_mut::<u32>(
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<i32>(
         result.skip_list,
         result.skip_list_length,
     ));
