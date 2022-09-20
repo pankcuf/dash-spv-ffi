@@ -2,9 +2,9 @@ extern crate libc;
 use crate::ffi::from::FromFFI;
 use crate::types;
 use dash_spv_models::{llmq, masternode};
-use dash_spv_primitives::crypto::byte_util::MutDecodable;
 use dash_spv_primitives::crypto::UInt256;
 use std::ffi::c_void;
+use byte::BytesExt;
 
 pub type AddInsightBlockingLookup =
     unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void);
@@ -54,7 +54,15 @@ where
     DH: Fn(*mut u8),
 {
     if !lookup_result.is_null() {
-        let hash = UInt256::from_mut(lookup_result);
+        // let hash = UInt256::from_mut(lookup_result);
+        let safe_bytes = unsafe { std::slice::from_raw_parts_mut(lookup_result, 32) };
+        let hash = match safe_bytes.read_with::<UInt256>(&mut 0, byte::LE) {
+            Ok(data) => Some(data),
+            Err(_err) => None
+        };
+        // println!("read_and_destroy_hash:");
+        // println!("read_and_destroy_hash: {:?}", hash);
+        // TODO: if i omit println then hash is dealloc???
         destroy_hash(lookup_result);
         hash
     } else {

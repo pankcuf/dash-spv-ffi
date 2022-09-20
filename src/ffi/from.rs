@@ -293,7 +293,7 @@ impl<'a> FromFFI<'a> for types::LLMQEntry {
 }
 
 impl<'a> FromFFI<'a> for types::MNListDiff {
-    type Item = mn_list_diff::MNListDiff<'a>;
+    type Item = mn_list_diff::MNListDiff;
 
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -309,8 +309,8 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
                     .map(|i| UInt256(*(*self.merkle_hashes.offset(i as isize))))
                     .collect(),
             ),
-            merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count),
-            merkle_flags_count: self.merkle_flags_count,
+            merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count).to_vec(),
+            // merkle_flags_count: self.merkle_flags_count,
             coinbase_transaction: (*self.coinbase_transaction).decode(),
             deleted_masternode_hashes: (0..self.deleted_masternode_hashes_count)
                 .into_iter()
@@ -379,7 +379,7 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
 }
 
 impl<'a> FromFFI<'a> for types::QRInfo {
-    type Item = rotation_info::LLMQRotationInfo<'a>;
+    type Item = rotation_info::LLMQRotationInfo;
 
     unsafe fn decode(&self) -> Self::Item {
         let extra_share = self.extra_share;

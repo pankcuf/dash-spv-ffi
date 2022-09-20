@@ -290,7 +290,7 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
     }
 }
 
-impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff<'a> {
+impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff {
     type Item = types::MNListDiff;
 
     fn encode(&self) -> Self::Item {
@@ -363,7 +363,7 @@ impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
     }
 }
 
-impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo<'a> {
+impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo {
     type Item = types::QRInfo;
 
     fn encode(&self) -> Self::Item {
