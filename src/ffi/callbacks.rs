@@ -3,8 +3,8 @@ use crate::ffi::from::FromFFI;
 use crate::types;
 use dash_spv_models::{llmq, masternode};
 use dash_spv_primitives::crypto::UInt256;
+use dash_spv_primitives::crypto::byte_util::MutDecodable;
 use std::ffi::c_void;
-use byte::BytesExt;
 
 pub type AddInsightBlockingLookup =
     unsafe extern "C" fn(block_hash: *mut [u8; 32], context: *const c_void);
@@ -49,27 +49,6 @@ pub type LogMessage = unsafe extern "C" fn(message: *const libc::c_char, context
 pub type HashDestroy = unsafe extern "C" fn(hash: *mut u8);
 pub type LLMQSnapshotDestroy = unsafe extern "C" fn(snapshot: *mut types::LLMQSnapshot);
 
-fn read_and_destroy_hash<DH>(lookup_result: *mut u8, destroy_hash: DH) -> Option<UInt256>
-where
-    DH: Fn(*mut u8),
-{
-    if !lookup_result.is_null() {
-        // let hash = UInt256::from_mut(lookup_result);
-        let safe_bytes = unsafe { std::slice::from_raw_parts_mut(lookup_result, 32) };
-        let hash = match safe_bytes.read_with::<UInt256>(&mut 0, byte::LE) {
-            Ok(data) => Some(data),
-            Err(_err) => None
-        };
-        // println!("read_and_destroy_hash:");
-        // println!("read_and_destroy_hash: {:?}", hash);
-        // TODO: if i omit println then hash is dealloc???
-        destroy_hash(lookup_result);
-        hash
-    } else {
-        None
-    }
-}
-
 pub fn lookup_masternode_list<MNL, MND>(
     block_hash: UInt256,
     masternode_list_lookup: MNL,
@@ -98,7 +77,14 @@ where
     BL: Fn(u32) -> *mut u8 + Copy,
     DH: Fn(*mut u8),
 {
-    read_and_destroy_hash(lookup(block_height), destroy_hash)
+    let lookup_result = lookup(block_height);
+    if !lookup_result.is_null() {
+        let hash = UInt256::from_mut(lookup_result);
+        destroy_hash(lookup_result);
+        hash
+    } else {
+        None
+    }
 }
 
 pub fn lookup_merkle_root_by_hash<MRL, DH>(
@@ -110,7 +96,15 @@ where
     MRL: Fn(UInt256) -> *mut u8 + Copy,
     DH: Fn(*mut u8),
 {
-    read_and_destroy_hash(lookup(block_hash), destroy_hash)
+    let lookup_result = lookup(block_hash);
+    if !lookup_result.is_null() {
+        let hash = UInt256::from_mut(lookup_result);
+        destroy_hash(lookup_result);
+        hash
+    } else {
+        None
+    }
+
 }
 
 pub fn lookup_snapshot_by_block_hash<SL, SD>(
