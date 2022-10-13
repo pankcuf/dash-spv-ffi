@@ -37,6 +37,7 @@ pub struct MNListDiff {
     pub added_quorums_count: usize,
     pub added_quorums: *mut *mut LLMQEntry,
 
+    pub base_block_height: u32,
     pub block_height: u32,
 }
 
@@ -118,42 +119,10 @@ impl<'a> TryRead<'a, Endian> for MNListDiff {
                 deleted_quorums,
                 added_quorums_count,
                 added_quorums,
+                base_block_height: 0,
                 block_height: 0,
             },
             *offset,
         ))
     }
 }
-
-// impl MNListDiff {
-//     pub fn from_data(
-//         base_block_hash: UInt256,
-//         block_hash: UInt256,
-//         total_transactions: u32,
-//         merkle_hashes: Vec<u8>,
-//         merkle_flags: Vec<u8>,
-//         coinbase_transaction: types::CoinbaseTransaction,
-//         deleted_masternode_hashes: Vec<UInt256>
-//     ) -> Self {
-//         Self {
-//             base_block_hash: boxed(base_block_hash.0),
-//             block_hash: boxed(block_hash.0),
-//             total_transactions: total_transactions,
-//             merkle_hashes: boxed_vec(merkle_hashes),
-//             merkle_hashes_count: merkle_hashes.len(),
-//             merkle_flags: boxed_vec(merkle_flags),
-//             merkle_flags_count: merkle_flags.len(),
-//             coinbase_transaction: boxed(coinbase_transaction),
-//             deleted_masternode_hashes_count,
-//             deleted_masternode_hashes,
-//             added_or_modified_masternodes_count,
-//             added_or_modified_masternodes,
-//             deleted_quorums_count,
-//             deleted_quorums,
-//             added_quorums_count,
-//             added_quorums,
-//             length: *offset,
-//             block_height: 0
-//         }
-//     }
-// }

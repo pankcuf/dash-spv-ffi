@@ -348,6 +348,7 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
                     acc
                 },
             ),
+            base_block_height: self.base_block_height,
             block_height: self.block_height,
         }
     }
@@ -364,17 +365,6 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
             skip_list: skip_list_bytes.to_vec(),
             skip_list_mode: self.skip_list_mode,
         }
-        /*Self::Item {
-            member_list: (0..self.member_list_length)
-                .into_iter()
-                .map(|i| *(self.member_list.offset(i as isize)))
-                .collect(),
-            skip_list: (0..self.skip_list_length)
-                .into_iter()
-                .map(|i| *(self.skip_list.offset(i as isize)))
-                .collect(),
-            skip_list_mode: self.skip_list_mode
-        }*/
     }
 }
 

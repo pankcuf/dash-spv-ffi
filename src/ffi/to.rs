@@ -345,6 +345,7 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff {
             deleted_quorums: boxed_vec(deleted_quorums_vec),
             added_quorums_count: added_quorums_vec.len(),
             added_quorums: boxed_vec(added_quorums_vec),
+            base_block_height: self.base_block_height,
             block_height: self.block_height,
         }
     }
