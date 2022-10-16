@@ -1,7 +1,6 @@
 use crate::ffi::to::ToFFI;
 use crate::types;
 use dash_spv_models::common;
-use dash_spv_models::common::block::Block;
 use dash_spv_models::common::llmq_type::LLMQType;
 use dash_spv_models::common::socket_address::SocketAddress;
 use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
@@ -9,11 +8,9 @@ use dash_spv_models::masternode::llmq_entry::LLMQ_DEFAULT_VERSION;
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::tx::{coinbase_transaction, transaction};
 use dash_spv_primitives::consensus::encode;
-use dash_spv_primitives::consensus::encode::VarInt;
 use dash_spv_primitives::crypto::byte_util::{
     Reversable, UInt128, UInt160, UInt256, UInt384, UInt768,
 };
-use dash_spv_primitives::crypto::var_array::VarArray;
 use std::collections::BTreeMap;
 use std::slice;
 
@@ -204,7 +201,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
                     let obj = *self.previous_operator_public_keys.offset(i as isize);
-                    let key = Block {
+                    let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
                     };
@@ -216,7 +213,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 BTreeMap::new(),
                 |mut acc, i| {
                     let obj = *self.previous_entry_hashes.offset(i as isize);
-                    let key = Block {
+                    let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
                     };
@@ -229,7 +226,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
                 BTreeMap::new(),
                 |mut acc, i| {
                     let obj = *self.previous_validity.offset(i as isize);
-                    let key = Block {
+                    let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
                     };
@@ -300,17 +297,11 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
             base_block_hash: UInt256(*self.base_block_hash),
             block_hash: UInt256(*self.block_hash),
             total_transactions: self.total_transactions,
-            // merkle_hashes: slice::from_raw_parts(self.merkle_hashes, self.merkle_hashes_count),
-            // merkle_hashes_count: self.merkle_hashes_count,
-            merkle_hashes: VarArray::new(
-                VarInt(self.merkle_hashes_count as u64),
-                (0..self.merkle_hashes_count)
-                    .into_iter()
-                    .map(|i| UInt256(*(*self.merkle_hashes.offset(i as isize))))
-                    .collect(),
-            ),
+            merkle_hashes: (0..self.merkle_hashes_count)
+                .into_iter()
+                .map(|i| UInt256(*(*self.merkle_hashes.offset(i as isize))))
+                .collect(),
             merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count).to_vec(),
-            // merkle_flags_count: self.merkle_flags_count,
             coinbase_transaction: (*self.coinbase_transaction).decode(),
             deleted_masternode_hashes: (0..self.deleted_masternode_hashes_count)
                 .into_iter()

@@ -2,7 +2,7 @@ use crate::ffi::boxer::{boxed, boxed_vec};
 use crate::ffi::from::FromFFI;
 use crate::types;
 use dash_spv_models::common;
-use dash_spv_models::common::{Block, LLMQType};
+use dash_spv_models::common::LLMQType;
 use dash_spv_models::llmq::{mn_list_diff, rotation_info, snapshot};
 use dash_spv_models::masternode::{llmq_entry, masternode_entry, masternode_list};
 use dash_spv_models::tx::{coinbase_transaction, transaction};
@@ -164,7 +164,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
                 .iter()
                 .map(
                     |(
-                        &Block {
+                        &common::Block {
                             hash,
                             height: block_height,
                         },
@@ -182,7 +182,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
                 .iter()
                 .map(
                     |(
-                        &Block {
+                        &common::Block {
                             hash: block_hash,
                             height: block_height,
                         },
@@ -200,7 +200,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
                 .iter()
                 .map(
                     |(
-                        &Block {
+                        &common::Block {
                             hash,
                             height: block_height,
                         },
@@ -321,12 +321,12 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff {
             block_hash: boxed(self.block_hash.0),
             total_transactions: self.total_transactions,
             merkle_hashes: boxed_vec(
-                (0..self.merkle_hashes.1.len())
+                (0..self.merkle_hashes.len())
                     .into_iter()
-                    .map(|i| boxed(self.merkle_hashes.1[i].0))
+                    .map(|i| boxed(self.merkle_hashes[i].0))
                     .collect(),
             ),
-            merkle_hashes_count: self.merkle_hashes.1.len(),
+            merkle_hashes_count: self.merkle_hashes.len(),
             merkle_flags: boxed_vec(self.merkle_flags.to_vec()),
             merkle_flags_count: self.merkle_flags.len(),
             coinbase_transaction: boxed(self.coinbase_transaction.encode()),
