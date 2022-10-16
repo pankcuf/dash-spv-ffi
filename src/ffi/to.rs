@@ -467,7 +467,7 @@ pub fn encode_masternodes_map(
     boxed_vec(
         masternodes
             .iter()
-            .map(|(_, entry)| boxed((*entry).encode()))
+            .map(|(_, entry)| boxed(entry.encode()))
             .collect(),
     )
 }
