@@ -14,11 +14,11 @@ use dash_spv_primitives::crypto::byte_util::{
 use std::collections::BTreeMap;
 use std::slice;
 
-pub trait FromFFI<'a> {
-    type Item: ToFFI<'a>;
+pub trait FromFFI {
+    type Item: ToFFI;
     unsafe fn decode(&self) -> Self::Item;
 }
-impl<'a> FromFFI<'a> for types::TransactionInput {
+impl FromFFI for types::TransactionInput {
     type Item = transaction::TransactionInput;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -50,7 +50,7 @@ impl<'a> FromFFI<'a> for types::TransactionInput {
     }
 }
 
-impl<'a> FromFFI<'a> for types::TransactionOutput {
+impl FromFFI for types::TransactionOutput {
     type Item = transaction::TransactionOutput;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -79,7 +79,7 @@ impl<'a> FromFFI<'a> for types::TransactionOutput {
         }
     }
 }
-impl<'a> FromFFI<'a> for types::Transaction {
+impl FromFFI for types::Transaction {
     type Item = transaction::Transaction;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -105,7 +105,7 @@ impl<'a> FromFFI<'a> for types::Transaction {
         }
     }
 }
-impl<'a> FromFFI<'a> for types::CoinbaseTransaction {
+impl FromFFI for types::CoinbaseTransaction {
     type Item = coinbase_transaction::CoinbaseTransaction;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -123,7 +123,7 @@ impl<'a> FromFFI<'a> for types::CoinbaseTransaction {
     }
 }
 
-impl<'a> FromFFI<'a> for types::MasternodeList {
+impl FromFFI for types::MasternodeList {
     type Item = masternode_list::MasternodeList;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -174,7 +174,7 @@ impl<'a> FromFFI<'a> for types::MasternodeList {
     }
 }
 
-impl<'a> FromFFI<'a> for types::MasternodeEntry {
+impl FromFFI for types::MasternodeEntry {
     type Item = masternode_entry::MasternodeEntry;
     unsafe fn decode(&self) -> Self::Item {
         Self::Item {
@@ -248,7 +248,7 @@ impl<'a> FromFFI<'a> for types::MasternodeEntry {
     }
 }
 
-impl<'a> FromFFI<'a> for types::LLMQEntry {
+impl FromFFI for types::LLMQEntry {
     type Item = llmq_entry::LLMQEntry;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -289,7 +289,7 @@ impl<'a> FromFFI<'a> for types::LLMQEntry {
     }
 }
 
-impl<'a> FromFFI<'a> for types::MNListDiff {
+impl FromFFI for types::MNListDiff {
     type Item = mn_list_diff::MNListDiff;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -344,7 +344,7 @@ impl<'a> FromFFI<'a> for types::MNListDiff {
         }
     }
 }
-impl<'a> FromFFI<'a> for types::LLMQSnapshot {
+impl FromFFI for types::LLMQSnapshot {
     type Item = snapshot::LLMQSnapshot;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -359,7 +359,7 @@ impl<'a> FromFFI<'a> for types::LLMQSnapshot {
     }
 }
 
-impl<'a> FromFFI<'a> for types::QRInfo {
+impl FromFFI for types::QRInfo {
     type Item = rotation_info::LLMQRotationInfo;
 
     unsafe fn decode(&self) -> Self::Item {
@@ -400,7 +400,7 @@ impl<'a> FromFFI<'a> for types::QRInfo {
     }
 }
 
-impl<'a> FromFFI<'a> for types::Block {
+impl FromFFI for types::Block {
     type Item = common::Block;
 
     unsafe fn decode(&self) -> Self::Item {

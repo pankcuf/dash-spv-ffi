@@ -10,11 +10,11 @@ use dash_spv_primitives::crypto::byte_util::UInt256;
 use std::collections::BTreeMap;
 use std::ptr::null_mut;
 
-pub trait ToFFI<'a> {
-    type Item: FromFFI<'a>;
+pub trait ToFFI {
+    type Item: FromFFI;
     fn encode(&self) -> Self::Item;
 }
-impl<'a> ToFFI<'a> for transaction::TransactionInput {
+impl ToFFI for transaction::TransactionInput {
     type Item = types::TransactionInput;
 
     fn encode(&self) -> Self::Item {
@@ -38,7 +38,7 @@ impl<'a> ToFFI<'a> for transaction::TransactionInput {
     }
 }
 
-impl<'a> ToFFI<'a> for transaction::TransactionOutput {
+impl ToFFI for transaction::TransactionOutput {
     type Item = types::TransactionOutput;
 
     fn encode(&self) -> Self::Item {
@@ -60,7 +60,7 @@ impl<'a> ToFFI<'a> for transaction::TransactionOutput {
     }
 }
 
-impl<'a> ToFFI<'a> for transaction::Transaction {
+impl ToFFI for transaction::Transaction {
     type Item = types::Transaction;
 
     fn encode(&self) -> Self::Item {
@@ -92,7 +92,7 @@ impl<'a> ToFFI<'a> for transaction::Transaction {
         }
     }
 }
-impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction {
+impl ToFFI for coinbase_transaction::CoinbaseTransaction {
     type Item = types::CoinbaseTransaction;
 
     fn encode(&self) -> Self::Item {
@@ -110,7 +110,7 @@ impl<'a> ToFFI<'a> for coinbase_transaction::CoinbaseTransaction {
     }
 }
 
-impl<'a> ToFFI<'a> for masternode_list::MasternodeList {
+impl ToFFI for masternode_list::MasternodeList {
     type Item = types::MasternodeList;
 
     fn encode(&self) -> Self::Item {
@@ -135,7 +135,7 @@ impl<'a> ToFFI<'a> for masternode_list::MasternodeList {
     }
 }
 
-impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
+impl ToFFI for masternode_entry::MasternodeEntry {
     type Item = types::MasternodeEntry;
 
     fn encode(&self) -> Self::Item {
@@ -241,7 +241,7 @@ impl<'a> ToFFI<'a> for masternode_entry::MasternodeEntry {
     }
 }
 
-impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
+impl ToFFI for llmq_entry::LLMQEntry {
     type Item = types::LLMQEntry;
 
     fn encode(&self) -> Self::Item {
@@ -290,7 +290,7 @@ impl<'a> ToFFI<'a> for llmq_entry::LLMQEntry {
     }
 }
 
-impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff {
+impl ToFFI for mn_list_diff::MNListDiff {
     type Item = types::MNListDiff;
 
     fn encode(&self) -> Self::Item {
@@ -350,7 +350,7 @@ impl<'a> ToFFI<'a> for mn_list_diff::MNListDiff {
         }
     }
 }
-impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
+impl ToFFI for snapshot::LLMQSnapshot {
     type Item = types::LLMQSnapshot;
 
     fn encode(&self) -> Self::Item {
@@ -364,7 +364,7 @@ impl<'a> ToFFI<'a> for snapshot::LLMQSnapshot {
     }
 }
 
-impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo {
+impl ToFFI for rotation_info::LLMQRotationInfo {
     type Item = types::QRInfo;
 
     fn encode(&self) -> Self::Item {
@@ -428,7 +428,7 @@ impl<'a> ToFFI<'a> for rotation_info::LLMQRotationInfo {
     }
 }
 
-impl<'a> ToFFI<'a> for common::Block {
+impl ToFFI for common::Block {
     type Item = types::Block;
 
     fn encode(&self) -> Self::Item {
