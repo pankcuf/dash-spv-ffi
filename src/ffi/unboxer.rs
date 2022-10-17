@@ -145,21 +145,15 @@ pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash)
 }
 
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
-    println!("unbox_llmq_snapshot.1: {:p}", quorum_snapshot);
     let result = unbox_any(quorum_snapshot);
-    println!("unbox_llmq_snapshot.2: {:p}", result);
-    let members = std::ptr::slice_from_raw_parts_mut::<u8>(
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(
         result.member_list,
         result.member_list_length,
-    );
-    println!("unbox_llmq_snapshot.3: {:p}", members);
-    unbox_any(members);
-    let skip_list = std::ptr::slice_from_raw_parts_mut::<i32>(
+    ));
+    unbox_any(std::ptr::slice_from_raw_parts_mut::<i32>(
         result.skip_list,
         result.skip_list_length,
-    );
-    println!("unbox_llmq_snapshot.4: {:p}", skip_list);
-    unbox_any(skip_list);
+    ));
 }
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     let input = unbox_any(result);
