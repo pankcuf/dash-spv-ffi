@@ -17,7 +17,7 @@ libc = "0.2.132"
 [dependencies.dash-spv-primitives]
 git = "https://github.com/pankcuf/dash-spv-primitives"
 branch = "master"
-version = "0.2.2"
+version = "0.2.3"
 
 [dependencies.dash-spv-models]
 git = "https://github.com/pankcuf/dash-spv-models"
