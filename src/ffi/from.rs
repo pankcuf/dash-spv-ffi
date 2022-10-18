@@ -87,11 +87,11 @@ impl FromFFI for types::Transaction {
         Self::Item {
             inputs: (0..self.inputs_count)
                 .into_iter()
-                .map(|i| (*(*(self.inputs.offset(i as isize)))).decode())
+                .map(|i| (*(*self.inputs.add(i))).decode())
                 .collect(),
             outputs: (0..self.outputs_count)
                 .into_iter()
-                .map(|i| (*(*(self.outputs.offset(i as isize)))).decode())
+                .map(|i| (*(*self.outputs.add(i))).decode())
                 .collect(),
             lock_time: self.lock_time,
             version: self.version,
@@ -144,7 +144,7 @@ impl FromFFI for types::MasternodeList {
             masternodes: (0..self.masternodes_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let value = (*(*(self.masternodes.offset(i as isize)))).decode();
+                    let value = (*(*self.masternodes.add(i))).decode();
                     let key = value
                         .provider_registration_transaction_hash
                         .clone()
@@ -156,14 +156,14 @@ impl FromFFI for types::MasternodeList {
             quorums: (0..self.llmq_type_maps_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let llmq_map = *(*(self.llmq_type_maps.offset(i as isize)));
+                    let llmq_map = *(*self.llmq_type_maps.add(i));
                     let key = LLMQType::from(llmq_map.llmq_type);
                     let value: BTreeMap<UInt256, llmq_entry::LLMQEntry> = (0..llmq_map.count)
                         .into_iter()
                         .fold(BTreeMap::new(), |mut acc, j| {
-                            let raw_value = *(*(llmq_map.values.offset(j as isize)));
+                            let raw_value = *(*llmq_map.values.add(j));
                             let value = raw_value.decode();
-                            let key = value.llmq_hash.clone();
+                            let key = value.llmq_hash;
                             acc.insert(key, value);
                             acc
                         });
@@ -201,7 +201,7 @@ impl FromFFI for types::MasternodeEntry {
             previous_operator_public_keys: (0..self.previous_operator_public_keys_count)
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
-                    let obj = *self.previous_operator_public_keys.offset(i as isize);
+                    let obj = *self.previous_operator_public_keys.add(i);
                     let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
@@ -213,7 +213,7 @@ impl FromFFI for types::MasternodeEntry {
             previous_entry_hashes: (0..self.previous_entry_hashes_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let obj = *self.previous_entry_hashes.offset(i as isize);
+                    let obj = *self.previous_entry_hashes.add(i);
                     let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
@@ -226,7 +226,7 @@ impl FromFFI for types::MasternodeEntry {
             previous_validity: (0..self.previous_validity_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let obj = *self.previous_validity.offset(i as isize);
+                    let obj = *self.previous_validity.add(i);
                     let key = common::Block {
                         height: obj.block_height,
                         hash: UInt256(obj.block_hash),
@@ -300,19 +300,19 @@ impl FromFFI for types::MNListDiff {
             total_transactions: self.total_transactions,
             merkle_hashes: (0..self.merkle_hashes_count)
                 .into_iter()
-                .map(|i| UInt256(*(*self.merkle_hashes.offset(i as isize))))
+                .map(|i| UInt256(*(*self.merkle_hashes.add(i))))
                 .collect(),
             merkle_flags: slice::from_raw_parts(self.merkle_flags, self.merkle_flags_count).to_vec(),
             coinbase_transaction: (*self.coinbase_transaction).decode(),
             deleted_masternode_hashes: (0..self.deleted_masternode_hashes_count)
                 .into_iter()
-                .map(|i| UInt256(*(*self.deleted_masternode_hashes.offset(i as isize))))
+                .map(|i| UInt256(*(*self.deleted_masternode_hashes.add(i))))
                 .collect(),
             added_or_modified_masternodes: (0..self.added_or_modified_masternodes_count)
                 .into_iter()
                 .fold(BTreeMap::new(), |mut acc, i| {
                     let value =
-                        (*(*(self.added_or_modified_masternodes.offset(i as isize)))).decode();
+                        (*(*self.added_or_modified_masternodes.add(i))).decode();
                     let key = value
                         .provider_registration_transaction_hash
                         .clone()
@@ -323,7 +323,7 @@ impl FromFFI for types::MNListDiff {
             deleted_quorums: (0..self.deleted_quorums_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let obj = *(*(self.deleted_quorums.offset(i as isize)));
+                    let obj = *(*self.deleted_quorums.add(i));
                     acc.entry(LLMQType::from(obj.llmq_type))
                         .or_insert(Vec::new())
                         .push(UInt256(*obj.llmq_hash));
@@ -333,7 +333,7 @@ impl FromFFI for types::MNListDiff {
             added_quorums: (0..self.added_quorums_count).into_iter().fold(
                 BTreeMap::new(),
                 |mut acc, i| {
-                    let entry = (*(*(self.added_quorums.offset(i as isize)))).decode();
+                    let entry = (*(*self.added_quorums.add(i))).decode();
                     acc.entry(entry.llmq_type)
                         .or_insert(BTreeMap::new())
                         .insert(entry.llmq_hash, entry);
@@ -352,10 +352,6 @@ impl FromFFI for types::LLMQSnapshot {
         Self::Item {
             member_list: slice::from_raw_parts(self.member_list, self.member_list_length).to_vec(),
             skip_list: slice::from_raw_parts::<i32>(self.skip_list, self.skip_list_length).to_vec(),
-            // skip_list: (0..self.skip_list_length)
-            //     .into_iter()
-            //     .map(|i| *(self.skip_list.offset(i as isize)))
-            //     .collect(),
             skip_list_mode: self.skip_list_mode,
         }
     }
@@ -388,15 +384,15 @@ impl FromFFI for types::QRInfo {
             mn_list_diff_at_h_4c,
             last_quorum_per_index: (0..self.last_quorum_per_index_count)
                 .into_iter()
-                .map(|i| (*(*self.last_quorum_per_index.offset(i as isize))).decode())
+                .map(|i| (*(*self.last_quorum_per_index.add(i))).decode())
                 .collect(),
             quorum_snapshot_list: (0..self.quorum_snapshot_list_count)
                 .into_iter()
-                .map(|i| (*(*self.quorum_snapshot_list.offset(i as isize))).decode())
+                .map(|i| (*(*self.quorum_snapshot_list.add(i))).decode())
                 .collect(),
             mn_list_diff_list: (0..self.mn_list_diff_list_count)
                 .into_iter()
-                .map(|i| (*(*self.mn_list_diff_list.offset(i as isize))).decode())
+                .map(|i| (*(*self.mn_list_diff_list.add(i))).decode())
                 .collect(),
         }
     }
