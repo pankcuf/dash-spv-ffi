@@ -24,9 +24,7 @@ pub struct MNListDiffResult {
 }
 impl MNListDiffResult {
     pub fn default_with_error(error: u8) -> Self {
-        let mut result = Self::default();
-        result.error_status = error;
-        result
+        Self { error_status: error, ..Default::default() }
     }
 }
 

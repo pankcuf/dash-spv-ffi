@@ -2,18 +2,22 @@
 #![allow(dead_code)]
 use crate::types;
 
+/// # Safety
 pub unsafe fn unbox_any<T: ?Sized>(any: *mut T) -> Box<T> {
     Box::from_raw(any)
 }
 
+/// # Safety
 pub unsafe fn unbox_vec<T>(vec: Vec<*mut T>) -> Vec<Box<T>> {
     vec.iter().map(|&x| unbox_any(x)).collect()
 }
 
+/// # Safety
 pub unsafe fn unbox_vec_ptr<T>(ptr: *mut T, count: usize) -> Vec<T> {
     Vec::from_raw_parts(ptr, count, count)
 }
 
+/// # Safety
 pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
     let entry = unbox_any(x);
     unbox_any(entry.confirmed_hash);
@@ -39,6 +43,7 @@ pub unsafe fn unbox_masternode_entry(x: *mut types::MasternodeEntry) {
     unbox_any(entry.ip_address);
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     let entry = unbox_any(x);
     unbox_any(entry.all_commitment_aggregated_signature);
@@ -60,6 +65,7 @@ pub unsafe fn unbox_llmq_entry(x: *mut types::LLMQEntry) {
     ));
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
     let entry = unbox_any(x);
     let values = unbox_vec_ptr(entry.values, entry.count);
@@ -67,6 +73,8 @@ pub unsafe fn unbox_llmq_map(x: *mut types::LLMQMap) {
         unbox_llmq_entry(x);
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
     let masternode_list = unbox_any(list);
     unbox_any(masternode_list.block_hash);
@@ -86,34 +94,41 @@ pub unsafe fn unbox_masternode_list(list: *mut types::MasternodeList) {
     ));
 }
 
+/// # Safety
 pub unsafe fn unbox_masternode_vec(vec: Vec<*mut types::MasternodeEntry>) {
     for &x in vec.iter() {
         unbox_masternode_entry(x);
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_llmq_vec(vec: Vec<*mut types::LLMQEntry>) {
     for &x in vec.iter() {
         unbox_llmq_entry(x);
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_map_vec(vec: Vec<*mut types::LLMQMap>) {
     for &x in vec.iter() {
         unbox_llmq_map(x);
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_hash_vec(vec: Vec<*mut types::LLMQTypedHash>) {
     for &x in vec.iter() {
         unbox_llmq_typed_hash(x);
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_typed_hash(typed_hash: *mut types::LLMQTypedHash) {
     let hash = unbox_any(typed_hash);
     unbox_any(hash.llmq_hash);
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_validation_data(llmq_validation_data: *mut types::LLMQValidationData) {
     let result = unbox_any(llmq_validation_data);
     unbox_any(result.all_commitment_aggregated_signature);
@@ -123,27 +138,33 @@ pub unsafe fn unbox_llmq_validation_data(llmq_validation_data: *mut types::LLMQV
     unbox_vec(unbox_vec_ptr(result.items, result.count));
 }
 
+/// # Safety
 pub unsafe fn unbox_snapshot_vec(vec: Vec<*mut types::LLMQSnapshot>) {
     for &x in vec.iter() {
         unbox_llmq_snapshot(x);
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_mn_list_diff_result_vec(vec: Vec<*mut types::MNListDiffResult>) {
     for &x in vec.iter() {
         unbox_mn_list_diff_result(x);
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_block(block: *mut types::Block) {
     let result = unbox_any(block);
     unbox_any(result.hash);
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_indexed_hash(indexed_hash: *mut types::LLMQIndexedHash) {
     let result = unbox_any(indexed_hash);
     unbox_any(result.hash);
 }
 
+/// # Safety
 pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
     let result = unbox_any(quorum_snapshot);
     unbox_any(std::ptr::slice_from_raw_parts_mut::<u8>(
@@ -155,6 +176,8 @@ pub unsafe fn unbox_llmq_snapshot(quorum_snapshot: *mut types::LLMQSnapshot) {
         result.skip_list_length,
     ));
 }
+
+/// # Safety
 pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
     let input = unbox_any(result);
     unbox_any(input.input_hash);
@@ -170,6 +193,8 @@ pub unsafe fn unbox_tx_input(result: *mut types::TransactionInput) {
         );
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_tx_output(result: *mut types::TransactionOutput) {
     let output = unbox_any(result);
     if !output.script.is_null() && output.script_length > 0 {
@@ -184,16 +209,22 @@ pub unsafe fn unbox_tx_output(result: *mut types::TransactionOutput) {
         );
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_tx_input_vec(result: Vec<*mut types::TransactionInput>) {
     for &x in result.iter() {
         unbox_tx_input(x);
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_tx_output_vec(result: Vec<*mut types::TransactionOutput>) {
     for &x in result.iter() {
         unbox_tx_output(x);
     }
 }
+
+/// # Safety
 pub unsafe fn unbox_tx(result: *mut types::Transaction) {
     let tx = unbox_any(result);
     unbox_tx_input_vec(unbox_vec_ptr(tx.inputs, tx.inputs_count));
@@ -201,6 +232,7 @@ pub unsafe fn unbox_tx(result: *mut types::Transaction) {
     unbox_any(tx.tx_hash);
 }
 
+/// # Safety
 pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
     let ctx = unbox_any(result);
     unbox_tx(ctx.base);
@@ -210,6 +242,7 @@ pub unsafe fn unbox_coinbase_tx(result: *mut types::CoinbaseTransaction) {
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     let res = unbox_any(result);
     if !res.base_block_hash.is_null() {
@@ -247,6 +280,7 @@ pub unsafe fn unbox_mn_list_diff_result(result: *mut types::MNListDiffResult) {
     }
 }
 
+/// # Safety
 pub unsafe fn unbox_qr_info_result(result: *mut types::QRInfoResult) {
     let res = unbox_any(result);
     if !res.result_at_tip.is_null() {

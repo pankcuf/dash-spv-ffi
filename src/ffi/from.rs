@@ -16,6 +16,7 @@ use std::slice;
 
 pub trait FromFFI {
     type Item: ToFFI;
+    /// # Safety
     unsafe fn decode(&self) -> Self::Item;
 }
 impl FromFFI for types::TransactionInput {
@@ -28,22 +29,11 @@ impl FromFFI for types::TransactionInput {
             script: if self.script.is_null() || self.script_length == 0 {
                 None
             } else {
-
-                // Some(Vec::from_raw_parts(
-                //     self.script,
-                //     self.script_length,
-                //     self.script_length,
-                // ))
                 Some(slice::from_raw_parts(self.script, self.script_length).to_vec())
             },
             signature: if self.signature.is_null() || self.signature_length == 0 {
                 None
             } else {
-                // Some(Vec::from_raw_parts(
-                //     self.signature,
-                //     self.signature_length,
-                //     self.signature_length,
-                // ))
                 Some(slice::from_raw_parts(self.signature, self.signature_length).to_vec())
             },
             sequence: self.sequence,
@@ -60,21 +50,11 @@ impl FromFFI for types::TransactionOutput {
             script: if self.script.is_null() || self.script_length == 0 {
                 None
             } else {
-                // Some(Vec::from_raw_parts(
-                //     self.script,
-                //     self.script_length,
-                //     self.script_length,
-                // ))
                 Some(slice::from_raw_parts(self.script, self.script_length).to_vec())
             },
             address: if self.address.is_null() || self.address_length == 0 {
                 None
             } else {
-                // Some(Vec::from_raw_parts(
-                //     self.address,
-                //     self.address_length,
-                //     self.address_length,
-                // ))
                 Some(slice::from_raw_parts(self.address, self.address_length).to_vec())
             },
         }
@@ -325,7 +305,7 @@ impl FromFFI for types::MNListDiff {
                 |mut acc, i| {
                     let obj = *(*self.deleted_quorums.add(i));
                     acc.entry(LLMQType::from(obj.llmq_type))
-                        .or_insert(Vec::new())
+                        .or_insert_with(Vec::new)
                         .push(UInt256(*obj.llmq_hash));
                     acc
                 },
@@ -335,7 +315,7 @@ impl FromFFI for types::MNListDiff {
                 |mut acc, i| {
                     let entry = (*(*self.added_quorums.add(i))).decode();
                     acc.entry(entry.llmq_type)
-                        .or_insert(BTreeMap::new())
+                        .or_insert_with(BTreeMap::new)
                         .insert(entry.llmq_hash, entry);
                     acc
                 },
